@@ -1,0 +1,8 @@
+#+TITLE: zone-pgm-elvis
+
+* Description
+
+A zone program where elves will work on behalf of you, like Doraemon
+gadgets "小人ロボット".
+
+[[./screenshots/2020-03-07.gif]]

@@ -1,0 +1,4 @@
+[submodule "test/example-repositories/cpython"]
+	path = test/example-repositories/cpython
+	url = https://github.com/python/cpython.git
+	branch = 3.8

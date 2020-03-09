@@ -1,8 +1,8 @@
-#+TITLE: zone-pgm-elves.el
+#+TITLE: elves.el
 
 * Description
 
 A [[https://www.emacswiki.org/emacs/ZoneMode][Zone Mode]] where elves will work on behalf of you, like the [[https://en.wikipedia.org/wiki/Doraemon][Doraemon’s]] gadget
-"小人ロボット" or “The Elves and the Shoemaker” in [[https://en.wikipedia.org/wiki/Grimms%27_Fairy_Tales][Grimm's Fairy Tales]].
+“小人ロボット” or “The Elves and the Shoemaker” in [[https://en.wikipedia.org/wiki/Grimms%27_Fairy_Tales][Grimm's Fairy Tales]].
 
-[[./screenshots/2020-03-07.gif]]
+[[./screenshots/2020-03-13.gif]]

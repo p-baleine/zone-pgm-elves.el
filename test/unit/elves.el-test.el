@@ -1,0 +1,39 @@
+;;; elves.el-test.el --- Tests for elves.el
+
+;;; Code:
+
+(require 'elves)
+
+(ert-deftest elves-test-elves--get-context ()
+  (let* ((file (elves-test--make-fixture-file))
+         (buffer (find-file-noselect file)))
+    (unwind-protect
+        (with-current-buffer buffer
+          (goto-char 65)
+          (should (equal (elves--get-context :len 40)
+                         "de\nWhen he filled the leaves with green.")))
+      (kill-buffer buffer))))
+
+(ert-deftest elves-test-elves--create-draft-buffer ()
+  (let* ((file (elves-test--make-fixture-file))
+         (reference-loc `(,file . 66))
+         (draft (elves--create-draft-buffer reference-loc))
+         (expected (with-current-buffer (find-file-noselect file)
+                     (buffer-substring 66 (point-max)))))
+    (unwind-protect
+        (with-current-buffer draft
+          (let ((actual (buffer-substring (point-min) (point-max))))
+            (should (equal expected actual))))
+      (kill-buffer draft))))
+
+(ert-deftest elves-test-elves--buffer-line-count ()
+  (let* ((file (elves-test--make-fixture-file))
+         (buffer (find-file-noselect file)))
+    (unwind-protect
+        (should (equal (elves--buffer-line-count buffer)
+                       (1+ (s-count-matches-all
+                            "\n"
+                            elves-test--fixture-text))))
+      (kill-buffer buffer))))
+
+;;; elves.el-test.el ends here

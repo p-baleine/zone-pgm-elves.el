@@ -3,6 +3,7 @@
 
 (package-file "elves.el")
 
+(depends-on "async")
 (depends-on "dash")
 (depends-on "f")
 (depends-on "s")

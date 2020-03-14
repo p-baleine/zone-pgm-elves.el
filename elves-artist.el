@@ -37,27 +37,28 @@
 
 (defclass elves-artist ()
   ((draft-buffer :initform nil
-     :accessor elves-artist-elves-artist-draft-buffer-of)
+     :accessor elves-artist-draft-buffer-of)
    (line-idx :initform 0
-     :accessor elves-artist-elves-artist-line-idx-of)
+     :accessor elves-artist-line-idx-of)
    (line-frames :initform nil
-     :accessor elves-artist-elves-artist-line-frames-of)))
+     :accessor elves-artist-line-frames-of)))
 
 (cl-defmethod elves-artist-completed? ((artist elves-artist))
+  ;; TODO: ↓これ、嘘じゃない？
   (eobp))
 
 (cl-defmethod elves-artist-depict ((artist elves-artist))
   (cl-assert (not (elves-artist-completed? artist)))
-  (unless (elves-artist-elves-artist-line-frames-of artist)
+  (unless (elves-artist-line-frames-of artist)
     (end-of-line)
     (insert "\n")
     (let* ((line (elves-artist--buffer-line-content
-                  (elves-artist-elves-artist-draft-buffer-of artist)
-                  (elves-artist-elves-artist-line-idx-of artist)))
+                  (elves-artist-draft-buffer-of artist)
+                  (elves-artist-line-idx-of artist)))
            (frames (elves-artist--line-frames line)))
-      (setf (elves-artist-elves-artist-line-frames-of artist) frames)
-      (cl-incf (elves-artist-elves-artist-line-idx-of artist))))
-  (let* ((frame (pop (elves-artist-elves-artist-line-frames-of artist)))
+      (setf (elves-artist-line-frames-of artist) frames)
+      (cl-incf (elves-artist-line-idx-of artist))))
+  (let* ((frame (pop (elves-artist-line-frames-of artist)))
          (content (elves-artist-frame-content frame))
          (seconds (elves-artist-frame-seconds frame))
          (lbp (line-beginning-position))
@@ -66,6 +67,7 @@
     (setf (buffer-substring lbp lep) content)
     (sit-for delay)))
 
+;; アイスクリーム屋さん
 (defclass elves-artist-temperament-phlegmatic-mixin () ())
 
 (defclass elves-artist-temperament-sanguine-mixin ()
@@ -83,6 +85,8 @@
   ((temp elves-artist-temperament-sanguine-mixin) seconds)
   (let ((rg (elves-artist-temperament-sanguine-mixin-rg-of temp))
         (sigma (elves-artist-temperament-sanguine-mixin-sigma-of temp)))
+    ;; 正規分布でぶれを作ると負数になることがあるんだよな、
+    ;; 分布の選択が間違ってる気がするけれど、頭悪いのでどうればよいのか分かりません
     (abs (+ seconds (* (funcall rg) sigma)))))
 
 (defclass elves-phlegmatic-artist
@@ -118,7 +122,6 @@
     (line &key
           (preceding-frames elves-artist--prompt-frames)
           (prompt-seconds 0.1))
-  ;; TODO: elves-prompt-frames -> preceding
   "Return a list of `elves-artist-frame' of`LINE'.
 
 `PRECEDING-FRAMES' are prepended to result."
@@ -141,7 +144,7 @@
                 (make-elves-artist-frame :content (s-join "" x))))
              it))))))
 
-;; Workshop
+;; Utils
 
 (defun elves-artist--buffer-line-content (buffer line)
   "Return contents on `LINE' in `BUFFER'."

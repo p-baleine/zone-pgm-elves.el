@@ -24,6 +24,7 @@
 
 https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform
 https://stackoverrun.com/ja/q/1441816"
+  ;; FIXME: 実装が中途半端じゃないかね？
   (let* ((rand (lambda () (/ (random 1000) 1000.0)))
          (theta (* 2 pi (funcall rand)))
          (rho (sqrt (* -2 (log (- 1 (funcall rand))))))

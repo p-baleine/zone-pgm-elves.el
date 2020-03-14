@@ -9,6 +9,7 @@
 ;; Version: 0.0.1
 ;; Keywords:
 ;; Homepage: https://github.com/p-baleine/zone-pgm-elves.el
+;; TODO: Package-Requires ちゃんとかいてね
 ;; Package-Requires: ((cl-lib "0.5"))
 ;;
 ;; This file is not part of GNU Emacs.
@@ -17,12 +18,21 @@
 ;;
 ;;  elves.el
 ;;
+;;  A Zone Mode where elves will work on behalf of you,
+;; like the Doraemon’s gadget “小人ロボット” or
+;;“The Elves and the Shoemaker” in Grimm’s Fairy Tales.
+;;
+;; こういう生産性に一切寄与しない物作っているときは、やる気が
+;; 失せないんだよなぁ
+;;
 ;;; Code:
 
 (require 'dash)
 (require 's)
+(require 'zone)
 
 (require 'elves-artist)
+(require 'elves-chitchat)
 (require 'elves-librarian)
 (require 'elves-scrutinizer)
 (require 'elves-utils)
@@ -53,36 +63,7 @@
     (goto-char (point-min))
     (count-lines (point-min) (point-max))))
 
-;; Chatter
-
-;; TODO: Wikiquote からひろってきたい
-;; https://wiki.archlinux.jp/index.php/Fortune
-;; steiner 先生とかね: https://en.wikiquote.org/wiki/Rudolf_Steiner
-(cl-defun elves--chatter-fortune-cookie-:D
-    (&key (max-of-dice 32) (quote-limit 120))
-  (let* ((fn
-          (lambda ()
-            (let*
-                ((n (shell-command-to-string "rig | head -n 1"))
-                 (name (s-snake-case (s-trim n)))
-                 (q (s-truncate
-                     quote-limit
-                     (s-trim (shell-command-to-string "fortune")))))
-              (format "@%s: %s" name q))))
-         (noop (lambda () ""))
-         (chat (if (and
-                    ;; apt install fortune
-                    (executable-find "fortune")
-                    ;; apt install rig
-                    (executable-find "rig"))
-                   fn noop))
-         (dice (lambda () (+ (random max-of-dice) 1))))
-    (lambda ()
-      (when (= (funcall dice) 1)
-        (funcall chat)))))
-
 ;; Zone pgm
-;; (zone-call #'elves-sanguine)
 
 (defun elves-sanguine ()
   (elves-pgm :artist (make-instance 'elves-sanguine-artist)))
@@ -90,15 +71,33 @@
 (defun elves-phlegmatic ()
   (elves-pgm :artist (make-instance 'elves-phlegmatic-artist)))
 
+;; TODO: autoload にして
+
 (cl-defun elves-pgm
     (&key
      (librarian (make-instance 'elves-librarian))
      (scrutinizer (make-instance 'elves-deterministic-scrutinizer))
-     (artist (make-instance 'elves-phlegmatic-artist))
-     (chat (elves--chatter-fortune-cookie-:D)))
+     (artist (make-instance 'elves-phlegmatic-artist)))
   "A Zone Mode where elves will work on behalf of you.
 Like the Doraemon’s gadget “小人ロボット” or “The Elves and the Shoemaker”
-in Grimm's Fairy Tales. `KEYSTROKE-STD'"
+in Grimm's Fairy Tales. `KEYSTROKE-STD'
+
+>> 小人ばこ（こびとばこ）は、「小人ロボット」（てんとう虫コミックス第7巻に収録）
+>> に登場する。
+>>
+>> グリム童話「小人の靴屋」をモチーフにした道具。これに仕事を頼んで寝ると、
+>> この箱から5、6体の小人型ロボットが現れ、童話の内容と同様に頼んだ人間が
+>> 寝ている間に仕事を片付けてくれる。仕事は靴磨きや草むしりといった雑用から、
+>> 自動車の故障の修理まで、なんでも可能。ただし頼んだ本人が眠らない限り、
+>> ロボットは出てきてくれない。
+
+ドラえもんのひみつ道具 (こ) (Mar. 3, 2020, 11:07 UTC).
+In Wikipedia: The Free Encyclopedia.
+Retrieved from https://ja.wikipedia.org/wiki/%E3%83%89%E3%83%A9%E3%81%88%E3%82%82%E3%82%93%E3%81%AE%E3%81%B2%E3%81%BF%E3%81%A4%E9%81%93%E5%85%B7_(%E3%81%93)
+
+Format of quotes follows
+“RFC 3676 Text/Plain Format and DelSp Parameters”
+https://www.ietf.org/rfc/rfc3676.txt"
   (let* ((context (elves--get-context))
          (references
           (elves-enumerate-referencces librarian context))
@@ -107,15 +106,12 @@ in Grimm's Fairy Tales. `KEYSTROKE-STD'"
          (draft-buffer (elves--create-draft-buffer reference-loc))
          (line-count (elves--buffer-line-count draft-buffer)))
     (unwind-protect
-        (progn
-          (setf (elves-artist-elves-artist-draft-buffer-of artist)
+        (elves-chitchat-with-chitchat
+          (setf (elves-artist-draft-buffer-of artist)
                 draft-buffer)
           (while (and (not (input-pending-p))
                       (not (elves-artist-completed? artist)))
-            (elves-artist-depict artist)
-            ;; TODO: ここなんとかならん？クロージャ使うのやめようよ
-            (let ((c (funcall chat)))
-              (when c (message c)))))
+            (elves-artist-depict artist)))
       (kill-buffer draft-buffer))))
 
 (provide 'elves)

@@ -20,6 +20,8 @@
 
 (defvar elves-test--usecase-timeout 40)
 
+;; FIXME: このひどいこーどをなおしてほしい
+
 (defmacro elves-test-define-usecase (usecase spec)
   "Define an ert test case.
 

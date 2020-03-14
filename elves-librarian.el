@@ -23,10 +23,10 @@
 (require 'eieio)
 (require 's)
 
-;; TODO: gitとかのコマンドを抽象化する
-;; TODO: historyも検索対象とする
+;; TODO: historyも検索対象とする、次これやりたい、絶対やってて楽しい
 ;; TODO: 検索条件をもっとfuzzyにする
-;; TODO: 拡張子を考慮する
+;; TODO: 拡張子を考慮する、今 clj ファイル開いてるなら clj しか検索しないみたいな
+;; 久々に clojure かきたいな
 
 (cl-defgeneric elves-enumerate-referencces (librarian context)
   "Return a list of reference that would be searched by
@@ -55,6 +55,7 @@ A reference should be the form of `(file-path . point)'."
          "git --no-pager grep -n --no-color -I -e")
         (search-cmd-postfix
          ;; バイトオフセットが欲しいので awk にひっかけている
+         ;; …エグいなぁー
          (s-join " "
            '("| gawk -F ':' '{\"head -n \"$2\" \"$1\""
              "| wc -c\" | getline p; print $1 \"\t\" $2 \"\t\" p}'")))

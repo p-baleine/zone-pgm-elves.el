@@ -78,6 +78,7 @@
      (librarian (make-instance 'elves-librarian))
      (scrutinizer (make-instance 'elves-deterministic-scrutinizer))
      (artist (make-instance 'elves-phlegmatic-artist)))
+
   "A Zone Mode where elves will work on behalf of you.
 Like the Doraemon’s gadget “小人ロボット” or “The Elves and the Shoemaker”
 in Grimm's Fairy Tales. `KEYSTROKE-STD'

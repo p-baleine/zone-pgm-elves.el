@@ -19,26 +19,32 @@
 ;;
 ;;; Code:
 
+(require 'ansi-color)
 (require 'async)
 (require 'eieio)
 
+(require 'elves-colors)
 (require 'elves-utils)
 
 (defvar elves-chitchat-thread
-  'elves-chitchat-thread-got-wrote-in-lisp-code)
+  'elves-chitchat-thread-human-declined)
+;; (defvar elves-chitchat-thread
+;;   'elves-chitchat-thread-got-wrote-in-lisp-code)
 
 (defvar elves-chitchat-interval
   'elves-chitchat-shut-interval)
 
-;; TODO: にんげんさん、ようせいさんごろくもついかしよう, 優先度 最高
-;; TODO: にんげんさん。ここらへんもてすとかこう
+(defalias '🎨 'elves-colors-apply)
+
+;; TODO: ここらへんもてすとかこう
 
 (cl-iter-defun elves-chitchat-thread-got-wrote-in-lisp-code ()
   ;; 世界は Lisp でできている♪
   (let ((lyrics
-         '(
+         `(
            "♪ For God wrote in Lisp code"
            "♪ When he filled the leaves with green."
+           ,(🎨 "♪ When he filled the leaves with green.")
            "♪ The fractal flowers and recursive roots:"
            "♪ The most lovely hack I've seen."
            "♪ And when I ponder snowflakes,"
@@ -51,7 +57,45 @@
       (iter-yield (nth idx lyrics))
       (cl-incf idx))))
 
-(cl-defun elves-chitchat-shut-interval (&key (mean 3.0) (sigma 1.0))
+(cl-iter-defun elves-chitchat-thread-human-declined ()
+  (let ((lyrics
+         '(
+           ;; FIXME: 「著作権」ってしってます？
+           "やつは、ちいさいです　ちびです　かてる？"
+           "れーせーといえば、ひとことでいうとこれって"
+           "くいずかー　しけんかも"
+           "へいきみたいな　でんぱありませぬここ"
+           "そこは、きあいで？"
+           "からからゆーてます？　　おまけいり？　　あげぞこ？"
+           "＼お役立ちー！／　どうかしましたです？"
+           "うしろからたべるつもりです？"
+           "こどものなまえ、ようせいってかいてふぇありーってつけました？"
+           "させたさせた"
+           "おこられない？"
+           "ぼくら、きいろいちごうとかてんかされてますゆえー"
+           "ほんろうされるの、いや？"
+           "そのなまなましさはないわー"
+           "あにめかちゅうし！ごめーん"
+           "やーん、くださいー"
+           "いきてるってすてきです？"
+           "ぼくらてきには、みずものですが？"
+           "きゃー　　こっちにもいたー　　いっぱいいたー　　おなかまー"
+           ))
+        (smiles
+         '(
+           "・ヮ・"
+           "(・ワ・)"
+           "(・ヮ・)"
+           "･ワ･"
+           "･ヮ･"
+           )))
+    (while t
+      (let ((l (nth (random (length lyrics)) lyrics))
+            (s (nth (random (length smiles)) smiles))
+            (ts (format-time-string "%H:%M")))
+        (iter-yield (concat ts  (🎨 (format " <%s> " s)) l))))))
+
+(cl-defun elves-chitchat-shut-interval (&key (mean 3.0) (sigma 1.5))
   "Return seconds between chats."
   (elves-sample-from-normd :mean mean :sigma sigma))
 
@@ -67,6 +111,10 @@
 (defvar elves-chitchat--script-dir
   (file-name-directory load-file-name))
 
+(cl-defun elves-chit-chat--apply-ansi-colors
+    (&optional (beginning (point-min)) (end (point-max)) _len)
+  (ansi-color-apply-on-region beginning end))
+
 (cl-defmacro elves-chitchat-with-chitchat (&rest body)
   "Execute `BODY' with chitchat.
 
@@ -81,6 +129,7 @@ Chitchat would be developed on a child process."
                          ,elves-chitchat--script-dir)
 
             (require 'generator)
+            (require 'elves-chitchat)
             (require 'elves-utils)
 
             (let*
@@ -104,7 +153,15 @@ Chitchat would be developed on a child process."
      ;; を遅延しないと、body が走ってくれない…今度理由を調べる
      (run-at-time
       "1 sec" nil
-      (lambda () (display-buffer (process-buffer proc))))
+      (lambda ()
+        (let ((buffer (process-buffer proc)))
+          (with-current-buffer buffer
+            (elves-chit-chat--apply-ansi-colors)
+            (add-hook
+             'after-change-functions
+             #'elves-chit-chat--apply-ansi-colors
+             nil t)
+            (display-buffer buffer)))))
      ,@body))
 
 (provide 'elves-chitchat)

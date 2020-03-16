@@ -46,15 +46,13 @@
          (start (- end len)))
     (buffer-substring start end)))
 
-(defun elves--create-draft-buffer (file-loc)
-  "Create a temporary buffer which contain the contents of `FILE-LOC'.
-
-`FILE-LOC' should be the form of `(file-path . point)'."
+(defun elves--create-draft-buffer (reference)
+  "Create a temporary buffer which contain the contents of `REFERENCE'."
   (-let* ((draft (get-buffer-create (make-temp-name "*elves-")))
-          ((file . start) file-loc))
+          (start (elves-librarian-reference-offset-of reference)))
     (with-current-buffer draft
       (insert-buffer-substring
-       (find-file-noselect file) start))
+       (elves-librarian-reference-contents-of reference) start))
     draft))
 
 (defun elves--buffer-line-count (buffer)

@@ -28,6 +28,36 @@
 ;; TODO: 拡張子を考慮する、今 clj ファイル開いてるなら clj しか検索しないみたいな
 ;; 久々に clojure かきたいな
 
+(defclass elves-librarian-reference ()
+  ((repository-url
+    :initarg :repository-url
+    :accessor elves-librarian-reference-repository-url-of
+    :type string)
+   (commit-hash
+    :initarg :hash
+    :accessor elves-librarian-reference-commit-hash-of
+    :type string)
+   (path
+    :initarg :path
+    :accessor elves-librarian-reference-path-of
+    :type string)
+   (offset
+    :initarg :offset
+    :accessor elves-librarian-reference-offset-of
+    :type number)
+   (contents
+    :accessor elves-librarian-reference-contents-of)))
+
+(defclass elves-librarian-reference-local
+  (elves-librarian-reference) ())
+
+(cl-defmethod elves-librarian-reference-contents-of
+  ((reference elves-librarian-reference-local))
+  (find-file-noselect
+   (f-join
+    (elves-librarian-reference-repository-url-of reference)
+    (elves-librarian-reference-path-of reference))))
+
 (cl-defgeneric elves-enumerate-referencces (librarian context)
   "Return a list of reference that would be searched by
 LIBRARIAN' based on `CONTEXT'.
@@ -35,11 +65,18 @@ LIBRARIAN' based on `CONTEXT'.
 A reference should be the form of `(file-path . point)'."
   (let* ((patterns (elves-librarian--patterns-from context))
          (cmd (elves-librarian--search-cmd patterns))
-         (output (shell-command-to-string cmd)))
+         (output (shell-command-to-string cmd))
+         (cwd
+         (s-trim
+          (shell-command-to-string "git rev-parse --show-toplevel"))))
     (->> (s-split "\n" output)
          (-remove #'s-blank?)
          (-map (lambda (x) (s-split "\t" x)))
-         (--map (cons (nth 0 it) (string-to-number (nth 2 it)))))))
+         (--map (make-instance
+                 'elves-librarian-reference-local
+                 :repository-url cwd
+                 :path (nth 0 it)
+                 :offset (string-to-number (nth 2 it)))))))
 
 (defclass elves-librarian () ())
 
@@ -57,8 +94,10 @@ A reference should be the form of `(file-path . point)'."
          ;; バイトオフセットが欲しいので awk にひっかけている
          ;; …エグいなぁー
          (s-join " "
-           '("| gawk -F ':' '{\"head -n \"$2\" \"$1\""
-             "| wc -c\" | getline p; print $1 \"\t\" $2 \"\t\" p}'")))
+           '("| gawk -F ':' -v P=\"$(git rev-parse --show-toplevel)\""
+             "'{\"head -n \"$2\" \"$1\" | wc -c\" | getline p;"
+             "\"realpath --relative-to \" P \" \" $1 | getline f;"
+             "print f \"\t\" $2 \"\t\" p}'")))
         (cwd
          (s-trim
           (shell-command-to-string "git rev-parse --show-toplevel"))))

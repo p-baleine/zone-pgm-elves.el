@@ -102,7 +102,6 @@
 ;; TODO: 子プロセスからメッセージもらって親で良いかんじに出力したい
 ;; 今は子プロセスとのメッセージのやりとりの仕方が分からないため
 ;; display-buffer でお茶を濁している
-;; TODO: 会話の内容の見た目(色とかさ)を弄れるようにする
 
 (defun elves-chitchat--symbol-function (sym)
   "Return the function definition of `SYM'."

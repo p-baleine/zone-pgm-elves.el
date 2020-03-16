@@ -17,11 +17,46 @@
             self.stream.writeln(self.separator1)
             self.stream.writeln(\"%s: %s\" % (flavour,self.getDescription(test)))
 ")))
-    (should (equal '("Lib/test/support/testresult.py" . 4430)
-                   (nth 0 references)))
-    (should (equal '("Lib/test/support/testresult.py" . 4481)
-                   (nth 1 references)))
-    (should (equal '("Lib/unittest/runner.py" . 3484)
-                   (nth 7 references)))))
+    (should (equal "Lib/test/support/testresult.py"
+                   (elves-librarian-reference-path-of
+                    (nth 0 references))))
+    (should (equal 4430
+                   (elves-librarian-reference-offset-of
+                    (nth 0 references))))
+    (should (equal "Lib/test/support/testresult.py"
+                   (elves-librarian-reference-path-of
+                    (nth 1 references))))
+    (should (equal 4481
+                   (elves-librarian-reference-offset-of
+                    (nth 1 references))))
+    (should (equal "Lib/unittest/runner.py"
+                   (elves-librarian-reference-path-of
+                    (nth 7 references))))
+    (should (equal 3484
+                   (elves-librarian-reference-offset-of
+                    (nth 7 references))))
+
+    (should (equal (substring
+"'''Test runner and result class for the regression test suite.
+
+'''
+
+import functools
+import io
+import sys
+import time
+import traceback
+import unittest
+
+import xml.etree.ElementTree as ET
+
+from datetime import datetime
+
+class RegressionTestResult(unittest.TextTestResult):"
+                    0 99)
+                   (with-current-buffer
+                       (elves-librarian-reference-contents-of
+                        (nth 1 references))
+                     (buffer-substring 1 100))))))
 
 ;;; elves-librarian.el-test.el ends here

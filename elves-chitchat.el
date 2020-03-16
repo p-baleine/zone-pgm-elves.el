@@ -128,6 +128,14 @@ Chitchat would be developed on a child process."
                          ,elves-chitchat--script-dir)
 
             (require 'generator)
+
+            ;; elves-chitchat は elves-chitchat-with-chitchat を
+            ;; 定義するために elves-chitchat の 定義を要するため
+            ;; require している。
+            ;; なんだかこのコードを書いていて頭がとてもメタメタしてきたので
+            ;; GEB か、むしろ久々に Metamagical Themas 読みたくなってきた…
+            ;;
+            ;; …購入しちゃいました。
             (require 'elves-chitchat)
             (require 'elves-utils)
 

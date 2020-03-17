@@ -27,6 +27,8 @@
 ;;
 ;;; Code:
 
+;; FIXME: make quiete で動かないんだけど fuck なんだけど、fuck fuck fuck fuck fuck
+
 (require 'dash)
 (require 's)
 (require 'zone)

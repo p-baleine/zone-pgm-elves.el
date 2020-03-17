@@ -5,48 +5,46 @@
 A [[https://www.emacswiki.org/emacs/ZoneMode][Zone Mode]] where elves will work on behalf of you, like the [[https://en.wikipedia.org/wiki/Doraemon][Doraemon’s]] gadget
 “小人ロボット” or “The Elves and the Shoemaker” in [[https://en.wikipedia.org/wiki/Grimms%27_Fairy_Tales][Grimm's Fairy Tales]].
 
-[[./screenshots/2020-03-13.gif]]
+[[./screenshots/2020-03-18.gif]]
 
 ** Motivation
-TODO: 日本語やめてやめてやめてやめてやめて
+Recently, to increase productivity, work efficiency is seriously
+valued in Japan.
+The “evolution”, which is called “働き方改革” and in charge of increasing
+productivity, is propagated unstoppably by the government.
 
-近年、生産性の向上のために業務効率化が叫ばれており、ここ日本でも
-「働き方改革」をコピーフレーズに行政の旗振りの元、飛ぶ鳥を落とす勢いで「改革」が
-進んでいます。
+For example, in Japan, minister of information technology is trying to achieve
+codevelopment of digital transformation(DX) and stamps(“印鑑”), whereas
+stamps(“印鑑”) are regarded as outdated or inefficient generally(*1).
+Also, almost all of companies use faxes(“ファックス”), which are ancient
+communication tool using thermo-sensitive paper, on almost all of deals
+to reassess true value of faxes(*2).
 
-例えば、一般には時代送れと揶揄されがちな「印鑑」ですが、日本では印鑑文化の
-存続と業務のデジタル化(DX)を共存させる試みを IT 担当大臣が牽引して
-いたり(※1)、また「ファックス」と呼ばれる感熱紙を利用した旧世代の
-コミュニケーションツールの真価を再評価すべく、多くの企業でクライアントとの
-やりとりの際にはほぼ必ず、印鑑を押印した書類の「ファックス」による伝達が
-徹底されています(※2)。
+I am living in Japan.
+And I really like the sence of Japanese that respect traditions and
+conserve their country. As a human(？自信ないです) that has residence status,
+I want to contribute to productivity of Japan and I create this repository.
 
-僕は日本に住んでいます。そして先程の「ファックス」の例などでも分かるとおり
-日本の方の伝統を重んじる姿勢、そして自国を大事にする姿勢に非常に好感を
-もっています。仮にも日本の在留資格を有する者として、少しでもそんな僕の尊敬する
-日本の生産性に寄与したくこのプログラムを作成しました。
+This repository(elves.el) takes a hint from “The Elves and the Shoemaker”
+in [[https://en.wikipedia.org/wiki/Grimms%27_Fairy_Tales][Grimm's Fairy Tales]]. This program will work on behalf of you(me).
+When you are sleeping, elves may complete your(my) tasks of tomorrow.
+Elves(and I) do not have human rights and are not restricted
+by *any* laws(e.g. “労基法”).
+So you can contribute to Japanese productivity without any effort!
 
-このプログラム - elves.el はグリム童話の “The Elves and the Shoemaker”
-にヒントを得て作成しました。
-このプログラムを実行すると、妖精さんがあなたの(僕の)代わりに仕事をしてくれます。
-例えば、あなたが(僕が)寝ている間にも、あなたの(僕の)代わりに妖精さんが仕事を
-してくれます。(妖精さん(僕)等には人権がないため、労基法等の制約は受けません。)
-そのため一切の対価無しに日本の生産性向上に寄与できます。
+This program may yet contain defects and Elves may yet produce incomplete code.
+I'll make effort with elves to contribute to Japanese productivity. And I
+respect Japanese openness so PRs are welcome!
 
-まだまだ未熟なプログラムであり、妖精さんの書くプログラムが不出来であることも
-ままあります。より日本の生産性に寄与するべく、今後も妖精さんと精進するつもりです。
-マタ、本プログラムは開放的な日本人の性質を尊重し、幅広い方々からの
-プルリクエストを受け入れています、もし欠陥や要望あ等りましたら
-PR お待ちしております！
+By the way, I quote the name of “elves” from “某 衰退”. Elves of “某 衰退” are
+very very かわいいの and I respect COOL JAPAN(which are referred as “かっこいい
+ニッポン”(*3)) and I ようせいいさんだいすきいいいいいです.
 
-ところで、「ようせいさん」のモデルは某衰退ですよ。某衰退のようせいさん、
-もうかわいいいくてかわいくてくーるくるじゃぱんさいこうなので、ようせいいさ
-んだいすきいいいいいです
-
-+ ※1: https://www.huffingtonpost.jp/entry/story_jp_5d7b46b3e4b077dcbd5bc5c2
-+ ※2: https://www.bbc.com/news/business-34667380
++ *1: https://www.huffingtonpost.jp/entry/story_jp_5d7b46b3e4b077dcbd5bc5c2
++ *2: https://www.bbc.com/news/business-34667380
   (流石にカセットテープは使ってないんじゃないだろうか？？)
++ *3: https://www4.nhk.or.jp/cooljapan/
 
 ** 閑話休題
-ただのジョークプログラムです。こういう GNU にも GDP にも一切寄与しないプログラムは
-作っていて萌えますね。
+This is just a joke program. I 萌える this sort of programs that do not seriously
+contribute to GNU and GDP.

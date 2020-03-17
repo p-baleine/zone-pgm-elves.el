@@ -23,8 +23,9 @@
 (require 'eieio)
 (require 's)
 
-;; TODO: historyも検索対象とする、次これやりたい、絶対やってて楽しい
+;; TODO: ろぎんぐろぎんぐろぎんぐろぎんぐ
 ;; TODO: 検索条件をもっとfuzzyにする
+;; TODO: 検索結果から検索に用いたファイルに関するエントリは除去する
 ;; TODO: 拡張子を考慮する、今 clj ファイル開いてるなら clj しか検索しないみたいな
 ;; 久々に clojure かきたいな
 
@@ -32,23 +33,50 @@
   "Return a list of reference that would be searched by
 LIBRARIAN' based on `CONTEXT'."
   (let* ((patterns (elves-librarian--patterns-from context))
-         (cmd (elves-librarian--search-cmd patterns))
+         (cmd (elves-librarian-search-cmd-of librarian patterns))
          (output (shell-command-to-string cmd))
          (cwd
          (s-trim
-          (shell-command-to-string "git rev-parse --show-toplevel"))))
+          (shell-command-to-string "git rev-parse --show-toplevel")))
+         (reference-class (elves-librarian-reference-class-of librarian)))
     (->> (s-split "\n" output)
          (-remove #'s-blank?)
          (-map (lambda (x) (s-split "\t" x)))
          (--map (make-instance
-                 'elves-librarian-reference-local
+                 reference-class
                  :repository-url cwd
                  :commit-hash (nth 0 it)
                  :path (nth 1 it)
                  :line-number (string-to-number (nth 2 it))
                  :column (string-to-number (nth 3 it)))))))
 
-(defclass elves-librarian () ())
+(defclass elves-librarian ()
+  ((search-cmd
+    :accessor elves-librarian-search-cmd-of)
+   (reference-class
+    :accessor elves-librarian-reference-class-of
+    :initform 'elves-librarian-reference-local)))
+
+(cl-defmethod elves-librarian-search-cmd-of
+  ((librarian elves-librarian) patterns)
+  (elves-librarian--search-cmd patterns))
+
+(defclass elves-librarian-@corridors_of_time (elves-librarian) ()
+  "はい
+
+https://www.youtube.com/watch?v=9ECai7f2Y40")
+
+(cl-defmethod elves-librarian-search-cmd-of
+  ((librarian elves-librarian-@corridors_of_time) patterns)
+  (elves-librarian--search-cmd
+   patterns
+   ;; FIXME: head で絞らないと「zsh:1: 引数リストが長すぎます: git」と怒られる
+   ;; なんでだろう？？
+   :commit-objects-cmd "git rev-list --all | head -n 10"))
+
+(cl-defmethod elves-librarian-reference-class-of
+  ((librarian elves-librarian-@corridors_of_time))
+  'elves-librarian-reference-@corridors_of_time)
 
 (defclass elves-librarian-reference ()
   ((repository-url
@@ -81,6 +109,9 @@ LIBRARIAN' based on `CONTEXT'."
 (defclass elves-librarian-reference-local
   (elves-librarian-reference) ())
 
+(defclass elves-librarian-reference-@corridors_of_time
+  (elves-librarian-reference) ())
+
 (cl-defmethod elves-librarian-reference-offset-of
   ((reference elves-librarian-reference))
   (let ((buffer
@@ -104,16 +135,38 @@ LIBRARIAN' based on `CONTEXT'."
     (elves-librarian-reference-repository-url-of reference)
     (elves-librarian-reference-path-of reference))))
 
+(cl-defmethod elves-librarian-reference-contents-of
+  ((reference elves-librarian-reference-@corridors_of_time))
+  ;; FIXME: テスト書けよ
+  (let* ((commit-ish
+          (elves-librarian-reference-commit-hash-of reference))
+         (dir-name (s-join
+                    "."
+                    `("zone-pgm-elves"
+                      ,(format-time-string "%s"))))
+         (work-dir
+          (let ((path (f-join "/" "tmp" dir-name)))
+            (mkdir path t)
+            path)))
+    (shell-command-to-string
+     (s-join
+      " "
+      `("git worktree add --detach"
+        ,work-dir ,commit-ish)))
+    (find-file-noselect
+     (f-join
+      work-dir
+      (elves-librarian-reference-path-of reference)))))
+
 (defun elves-librarian--patterns-from (context)
   (->> (s-split "\n" context)
-               (-map #'s-trim)
-               (-remove #'s-blank?)
-               (-map #'shell-quote-argument)
-               (s-join  " --or -e ")))
+       (-map #'s-trim)
+       (-remove #'s-blank?)
+       (-map #'shell-quote-argument)
+       (s-join  " --or -e ")))
 
 (cl-defun elves-librarian--search-cmd
     (patterns &key (commit-objects-cmd "git rev-parse HEAD"))
-   ;; history に対応するときは、git rev-list --all
   (let ((search-cmd-prefix
          (s-join
           " "

@@ -22,8 +22,7 @@
 ;; like the Doraemon’s gadget “小人ロボット” or
 ;;“The Elves and the Shoemaker” in Grimm’s Fairy Tales.
 ;;
-;; こういう生産性に一切寄与しない物作っているときは、やる気が
-;; 失せないんだよなぁ
+;; こういう生産性に一切寄与しない物作っているときは、やる気があるんだよなぁ
 ;;
 ;;; Code:
 
@@ -66,17 +65,23 @@
 (defun elves-sanguine ()
   (elves-pgm :artist (make-instance 'elves-sanguine-artist)))
 
+(defun elves-sanguine-@corridors_of_time ()
+  (elves-pgm
+   :artist (make-instance 'elves-sanguine-artist)
+   :scrutinizer (make-instance 'elves-probabilistic-scrutinizer)
+   :librarian (make-instance 'elves-librarian-@corridors_of_time)))
+
 (defun elves-phlegmatic ()
   (elves-pgm :artist (make-instance 'elves-phlegmatic-artist)))
 
 ;; TODO: autoload にして
+;; FIXME: 色々、バッファとか諸々、リークしてるのやめてくりゃれ
 
 (cl-defun elves-pgm
     (&key
      (librarian (make-instance 'elves-librarian))
      (scrutinizer (make-instance 'elves-deterministic-scrutinizer))
      (artist (make-instance 'elves-phlegmatic-artist)))
-
   "A Zone Mode where elves will work on behalf of you.
 Like the Doraemon’s gadget “小人ロボット” or “The Elves and the Shoemaker”
 in Grimm's Fairy Tales. `KEYSTROKE-STD'

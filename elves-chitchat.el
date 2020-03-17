@@ -95,7 +95,7 @@
             (s (nth (random (length smiles)) smiles))
             (ts (format-time-string "%H:%M")))
         (iter-yield
-         (concat ts (🎨 (format "\t<%s>\t" s) :bold 1) l))))))
+         (concat ts (🎨 (format "\t<%s>\t" s)) l))))))
 
 (cl-defun elves-chitchat-shut-interval (&key (mean 3.0) (sigma 1.5))
   "Return seconds between chats."

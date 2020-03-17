@@ -36,6 +36,12 @@
 (require 'elves-scrutinizer)
 (require 'elves-utils)
 
+(defvar elves-debugging t)
+
+(when elves-debugging
+  (elves--log-set-level 'debug)
+  (elves--log-enable-logging))
+
 ;; Workshop
 
 (cl-defun elves--get-context (&key (len 300))

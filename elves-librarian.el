@@ -23,6 +23,8 @@
 (require 'eieio)
 (require 's)
 
+(require 'elves-logging)
+
 ;; TODO: ろぎんぐろぎんぐろぎんぐろぎんぐ
 ;; TODO: 検索条件をもっとfuzzyにする
 ;; TODO: 検索結果から検索に用いたファイルに関するエントリは除去する
@@ -59,6 +61,9 @@ LIBRARIAN' based on `CONTEXT'."
 
 (cl-defmethod elves-librarian-search-cmd-of
   ((librarian elves-librarian) patterns)
+  (elves--debug "%s will search via `%s'"
+                (eieio-object-class-name librarian)
+                (elves-librarian--search-cmd patterns))
   (elves-librarian--search-cmd patterns))
 
 (defclass elves-librarian-@corridors_of_time (elves-librarian) ()
@@ -68,6 +73,10 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
 
 (cl-defmethod elves-librarian-search-cmd-of
   ((librarian elves-librarian-@corridors_of_time) patterns)
+  ;; FIXME: 多分ここら辺、around とか使えばスッキリできるんじゃない？
+  (elves--debug "%s will search via `%s'"
+                (eieio-object-class-name librarian)
+                (elves-librarian--search-cmd patterns))
   (elves-librarian--search-cmd
    patterns
    ;; FIXME: head で絞らないと「zsh:1: 引数リストが長すぎます: git」と怒られる
@@ -148,6 +157,9 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
           (let ((path (f-join "/" "tmp" dir-name)))
             (mkdir path t)
             path)))
+    (elves--debug
+     "Add worktree of %s at %s"
+     commit-ish work-dir)
     (shell-command-to-string
      (s-join
       " "

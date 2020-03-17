@@ -6,6 +6,7 @@
 (depends-on "async")
 (depends-on "dash")
 (depends-on "f")
+(depends-on "log4e")
 (depends-on "s")
 
 (development

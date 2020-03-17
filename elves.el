@@ -9,7 +9,8 @@
 ;; Version: 0.0.1
 ;; Keywords:
 ;; Homepage: https://github.com/p-baleine/zone-pgm-elves.el
-;; TODO: Package-Requires ちゃんとかいてね
+;;
+;; TODO: Package-Requires ちゃんとかけよ
 ;; Package-Requires: ((cl-lib "0.5"))
 ;;
 ;; This file is not part of GNU Emacs.
@@ -22,8 +23,7 @@
 ;; like the Doraemon’s gadget “小人ロボット” or
 ;;“The Elves and the Shoemaker” in Grimm’s Fairy Tales.
 ;;
-;; こういう生産性に一切寄与しない物作っているときは、やる気が
-;; 失せないんだよなぁ
+;; こういう生産性に一切寄与しない物作っているときは、やる気があるんだよなぁ
 ;;
 ;;; Code:
 
@@ -37,24 +37,28 @@
 (require 'elves-scrutinizer)
 (require 'elves-utils)
 
+(defvar elves-debugging t)
+
+(when elves-debugging
+  (elves--log-set-level 'debug)
+  (elves--log-enable-logging))
+
 ;; Workshop
 
 (cl-defun elves--get-context (&key (len 300))
   "Return context up to `LEN' length."
-  ; TODO: 範囲外のハンドリング(テストも)
+  ; FIXME: 範囲外のハンドリングしろよ(テストもかけよ)
   (let* ((end (point))
          (start (- end len)))
     (buffer-substring start end)))
 
-(defun elves--create-draft-buffer (file-loc)
-  "Create a temporary buffer which contain the contents of `FILE-LOC'.
-
-`FILE-LOC' should be the form of `(file-path . point)'."
+(defun elves--create-draft-buffer (reference)
+  "Create a temporary buffer which contain the contents of `REFERENCE'."
   (-let* ((draft (get-buffer-create (make-temp-name "*elves-")))
-          ((file . start) file-loc))
+          (start (elves-librarian-reference-offset-of reference)))
     (with-current-buffer draft
       (insert-buffer-substring
-       (find-file-noselect file) start))
+       (elves-librarian-reference-contents-of reference) start))
     draft))
 
 (defun elves--buffer-line-count (buffer)
@@ -68,20 +72,30 @@
 (defun elves-sanguine ()
   (elves-pgm :artist (make-instance 'elves-sanguine-artist)))
 
+(defun elves-sanguine-@corridors_of_time ()
+  ;; 時の回廊にいます
+  ;; 3 秒前のことも忘れていたりします、
+  ;; そろそろ人としての自信も喪失しがちだったりします
+  ;; (困ったなぁ)
+  (elves-pgm
+   :artist (make-instance 'elves-sanguine-artist)
+   :scrutinizer (make-instance 'elves-probabilistic-scrutinizer)
+   :librarian (make-instance 'elves-librarian-@corridors_of_time)))
+
 (defun elves-phlegmatic ()
   (elves-pgm :artist (make-instance 'elves-phlegmatic-artist)))
 
 ;; TODO: autoload にして
+;; FIXME: 色々、バッファとか諸々、リークしてるのやめてくりゃれ
 
 (cl-defun elves-pgm
     (&key
      (librarian (make-instance 'elves-librarian))
      (scrutinizer (make-instance 'elves-deterministic-scrutinizer))
      (artist (make-instance 'elves-phlegmatic-artist)))
-
   "A Zone Mode where elves will work on behalf of you.
 Like the Doraemon’s gadget “小人ロボット” or “The Elves and the Shoemaker”
-in Grimm's Fairy Tales. `KEYSTROKE-STD'
+in Grimm's Fairy Tales.
 
 >> 小人ばこ（こびとばこ）は、「小人ロボット」（てんとう虫コミックス第7巻に収録）
 >> に登場する。

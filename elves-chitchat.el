@@ -93,7 +93,7 @@
       (let ((l (nth (random (length lyrics)) lyrics))
             (s (nth (random (length smiles)) smiles))
             (ts (format-time-string "%H:%M")))
-        (iter-yield (concat ts  (🎨 (format " <%s> " s)) l))))))
+        (iter-yield (concat ts  (🎨 (format "\t<%s>\t" s)) l))))))
 
 (cl-defun elves-chitchat-shut-interval (&key (mean 3.0) (sigma 1.5))
   "Return seconds between chats."
@@ -102,7 +102,6 @@
 ;; TODO: 子プロセスからメッセージもらって親で良いかんじに出力したい
 ;; 今は子プロセスとのメッセージのやりとりの仕方が分からないため
 ;; display-buffer でお茶を濁している
-;; TODO: 会話の内容の見た目(色とかさ)を弄れるようにする
 
 (defun elves-chitchat--symbol-function (sym)
   "Return the function definition of `SYM'."
@@ -134,10 +133,9 @@ Chitchat would be developed on a child process."
             ;; 定義するために elves-chitchat の 定義を要するため
             ;; require している。
             ;; なんだかこのコードを書いていて頭がとてもメタメタしてきたので
-            ;; GEB か、むしろ久々に Metamagical Themas 読みたくなってきた…
-            ;;
-            ;; …購入しちゃいました。
+            ;; GEB か、Metamagical Themas 詠みませふ
             (require 'elves-chitchat)
+
             (require 'elves-utils)
 
             (let*
@@ -157,8 +155,9 @@ Chitchat would be developed on a child process."
                    (user-error
                     "Elves chat thread iterator raise error")))
                 (sleep-for (funcall interval)))))))))
+
      ;; あまりちゃんと理解してないんですが、run-at-time で display-buffer
-     ;; を遅延しないと、body が走ってくれない…今度理由を調べる
+     ;; を遅延しないと、body が走ってくれない…今度理由を調べる、今日は寝る
      (run-at-time
       "1 sec" nil
       (lambda ()

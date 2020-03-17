@@ -3,6 +3,7 @@
 ;;; Code:
 
 (require 'elves)
+(require 'elves-librarian)
 
 (ert-deftest elves-test-elves--get-context ()
   (let* ((file (elves-test--make-fixture-file))
@@ -16,10 +17,16 @@
 
 (ert-deftest elves-test-elves--create-draft-buffer ()
   (let* ((file (elves-test--make-fixture-file))
-         (reference-loc `(,file . 66))
-         (draft (elves--create-draft-buffer reference-loc))
+         (reference
+          (make-instance
+           'elves-librarian-reference-local
+           :repository-url ""
+           :path file
+           :line-number 2
+           :column 37))
+         (draft (elves--create-draft-buffer reference))
          (expected (with-current-buffer (find-file-noselect file)
-                     (buffer-substring 66 (point-max)))))
+                     (buffer-substring 65 (point-max)))))
     (unwind-protect
         (with-current-buffer draft
           (let ((actual (buffer-substring (point-min) (point-max))))

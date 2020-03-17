@@ -22,10 +22,11 @@
            'elves-librarian-reference-local
            :repository-url ""
            :path file
-           :offset 66))
+           :line-number 2
+           :column 37))
          (draft (elves--create-draft-buffer reference))
          (expected (with-current-buffer (find-file-noselect file)
-                     (buffer-substring 66 (point-max)))))
+                     (buffer-substring 65 (point-max)))))
     (unwind-protect
         (with-current-buffer draft
           (let ((actual (buffer-substring (point-min) (point-max))))

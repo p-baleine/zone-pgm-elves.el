@@ -31,8 +31,8 @@
 ;; TODO: 拡張子を考慮する、今 clj ファイル開いてるなら clj しか検索しないみたいな
 
 (cl-defgeneric elves-enumerate-referencces (librarian context)
-  "Return a list of reference that would be searched by
-LIBRARIAN' based on `CONTEXT'."
+  "Return a list of references that would be searched by
+`LIBRARIAN' based on `CONTEXT'."
   (let* ((patterns (elves-librarian--patterns-from context))
          (cmd
           (let ((cmd
@@ -91,7 +91,7 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
   ;; よいのかな、と思う。
   ;; …でも正直 CLOS(eieio か)って僕の常識が一切通用しないので、何が正しいのか
   ;; 分からなく、ファイル分ける必要もないのかもしれない…そういう常識が通用しない
-  ;; 辺りが触っていて楽してく楽しくて、時間を忘れてしまいますね > えいえいおお。
+  ;; 辺りが触っていて楽してく楽しくて、時間を忘れてしまいます > えいえいおお。
   ((repository-url
     :initarg :repository-url
     :accessor elves-librarian-reference-repository-url-of

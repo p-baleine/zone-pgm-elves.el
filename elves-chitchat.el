@@ -44,7 +44,6 @@
   (let ((lyrics
          `(
            "♪ For God wrote in Lisp code"
-           "♪ When he filled the leaves with green."
            ,(🎨 "♪ When he filled the leaves with green.")
            "♪ The fractal flowers and recursive roots:"
            "♪ The most lovely hack I've seen."
@@ -58,7 +57,12 @@
       (iter-yield (nth idx lyrics))
       (cl-incf idx))))
 
+;; NOTE: 中二としては lain 版の chitchat も作ってほしい
+
 (cl-iter-defun elves-chitchat-thread-human-declined ()
+  ;; NOTE: https://twitter.com/youseisan_ から on the fly で台詞とってくる
+  ;; ここどうせ非同期で動くので、インターネットにアクセスする際の
+  ;; I/O 負荷は気にしなくてよいんだから、やれ
   (let ((lyrics
          '(
            ;; FIXME: 「著作権」ってしってます？

@@ -27,7 +27,7 @@
 ;;
 ;;; Code:
 
-;; FIXME: make quiete で動かないんだけど fuck なんだけど、fuck fuck fuck fuck fuck
+;; FIXME: CI ひっかけろよ、まじで
 
 (require 'dash)
 (require 's)
@@ -76,10 +76,12 @@
   (elves-pgm :artist (make-instance 'elves-sanguine-artist)))
 
 (defun elves-sanguine-@corridors_of_time ()
-  ;; 時の回廊にいます
-  ;; 3 秒前のことも忘れていたりします、
-  ;; そろそろ人としての自信も喪失しがちだったりします
-  ;; (困ったなぁ)
+  ;; 時の回廊ですよ♪、光田さんですよ♪♪♪
+  ;;
+  ;; …最近は、自分が男か女か、何歳なのかよく分からないのです(元々なのでは？)
+  ;; 記憶も曖昧…3 秒前のことも覚えてなかったりします(元々なのでは？)
+  ;; そろそろ人としての自信もないのです(…困ったなぁ 😅)
+  ;; なんか僕もうだめな気がしてきました(…今更？)…へへ 😂
   (elves-pgm
    :artist (make-instance 'elves-sanguine-artist)
    :scrutinizer (make-instance 'elves-probabilistic-scrutinizer)
@@ -89,7 +91,7 @@
   (elves-pgm :artist (make-instance 'elves-phlegmatic-artist)))
 
 ;; TODO: autoload にして
-;; FIXME: 色々、バッファとか諸々、リークしてるのやめてくりゃれ
+;; FIXME: 色々、(バッファとか諸々)リークしてるのまじでやめて
 
 (cl-defun elves-pgm
     (&key

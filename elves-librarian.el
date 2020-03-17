@@ -20,6 +20,7 @@
 ;;; Code:
 
 (require 'dash)
+(require 'f)
 (require 'eieio)
 (require 's)
 
@@ -29,7 +30,6 @@
 ;; TODO: 検索条件をもっとfuzzyにする
 ;; TODO: 検索結果から検索に用いたファイルに関するエントリは除去する
 ;; TODO: 拡張子を考慮する、今 clj ファイル開いてるなら clj しか検索しないみたいな
-;; 久々に clojure かきたいな
 
 (cl-defgeneric elves-enumerate-referencces (librarian context)
   "Return a list of reference that would be searched by
@@ -68,12 +68,11 @@ LIBRARIAN' based on `CONTEXT'."
 
 (defclass elves-librarian-@corridors_of_time (elves-librarian) ()
   "はい
-
 https://www.youtube.com/watch?v=9ECai7f2Y40")
 
 (cl-defmethod elves-librarian-search-cmd-of
   ((librarian elves-librarian-@corridors_of_time) patterns)
-  ;; FIXME: 多分ここら辺、around とか使えばスッキリできるんじゃない？
+  ;; FIXME: 多分ここら辺(debug logging 周り)、around とか使えばスッキリできるんじゃない？
   (elves--debug "%s will search via `%s'"
                 (eieio-object-class-name librarian)
                 (elves-librarian--search-cmd patterns))
@@ -88,6 +87,11 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
   'elves-librarian-reference-@corridors_of_time)
 
 (defclass elves-librarian-reference ()
+  ;; reference って librarian とは別な概念な気がするのでファイル分けたほうが
+  ;; よいのかな、と思う。
+  ;; …でも正直 CLOS(eieio か)って僕の常識が一切通用しないので、何が正しいのか
+  ;; 分からなく、ファイル分ける必要もないのかもしれない…そういう常識が通用しない
+  ;; 辺りが触っていて楽してく楽しくて、時間を忘れてしまいますね > えいえいおお。
   ((repository-url
     :initarg :repository-url
     :accessor elves-librarian-reference-repository-url-of
@@ -121,6 +125,7 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
 (defclass elves-librarian-reference-@corridors_of_time
   (elves-librarian-reference) ())
 
+;; FIXME: これは generic なのでは？？
 (cl-defmethod elves-librarian-reference-offset-of
   ((reference elves-librarian-reference))
   (let ((buffer
@@ -188,7 +193,7 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
          (s-join
           " "
           `("$("
-            ,commit-objects-cmd ;; 危ないなぁ
+            ,commit-objects-cmd ;; 危ないなぁ 😱
             ")"
             "--"
             "$(git rev-parse --show-toplevel)"

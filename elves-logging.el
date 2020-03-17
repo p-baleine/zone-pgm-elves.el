@@ -21,6 +21,8 @@
 
 (require 'log4e)
 
+;; (elves--log-open-log)
+
 (log4e:deflogger
  "elves" "%t [%l] %m" "%H:%M:%S"
  '((fatal . "fatal")

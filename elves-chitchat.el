@@ -133,10 +133,9 @@ Chitchat would be developed on a child process."
             ;; 定義するために elves-chitchat の 定義を要するため
             ;; require している。
             ;; なんだかこのコードを書いていて頭がとてもメタメタしてきたので
-            ;; GEB か、むしろ久々に Metamagical Themas 読みたくなってきた…
-            ;;
-            ;; …購入しちゃいました。
+            ;; GEB か、Metamagical Themas 詠みませふ
             (require 'elves-chitchat)
+
             (require 'elves-utils)
 
             (let*
@@ -156,8 +155,9 @@ Chitchat would be developed on a child process."
                    (user-error
                     "Elves chat thread iterator raise error")))
                 (sleep-for (funcall interval)))))))))
+
      ;; あまりちゃんと理解してないんですが、run-at-time で display-buffer
-     ;; を遅延しないと、body が走ってくれない…今度理由を調べる
+     ;; を遅延しないと、body が走ってくれない…今度理由を調べる、今日は寝る
      (run-at-time
       "1 sec" nil
       (lambda ()

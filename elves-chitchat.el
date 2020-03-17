@@ -28,6 +28,7 @@
 
 (defvar elves-chitchat-thread
   'elves-chitchat-thread-human-declined)
+
 ;; (defvar elves-chitchat-thread
 ;;   'elves-chitchat-thread-got-wrote-in-lisp-code)
 
@@ -93,7 +94,8 @@
       (let ((l (nth (random (length lyrics)) lyrics))
             (s (nth (random (length smiles)) smiles))
             (ts (format-time-string "%H:%M")))
-        (iter-yield (concat ts  (🎨 (format "\t<%s>\t" s)) l))))))
+        (iter-yield
+         (concat ts (🎨 (format "\t<%s>\t" s) :bold 1) l))))))
 
 (cl-defun elves-chitchat-shut-interval (&key (mean 3.0) (sigma 1.5))
   "Return seconds between chats."
@@ -118,7 +120,6 @@
   "Execute `BODY' with chitchat.
 
 Chitchat would be developed on a child process."
-  ;; FIXME: 子プロセスちゃんと殺して
   `(let*
      ((proc
        (async-start
@@ -129,13 +130,17 @@ Chitchat would be developed on a child process."
 
             (require 'generator)
 
-            ;; elves-chitchat は elves-chitchat-with-chitchat を
-            ;; 定義するために elves-chitchat の 定義を要するため
+            ;; 子プロセスで elves-chitchat-thread 等の(実態)を
+            ;; 実行するためにこのファイル(elves-chitchat)を要するため
             ;; require している。
-            ;; なんだかこのコードを書いていて頭がとてもメタメタしてきたので
+            ;;
+            ;; ちなみにあっち(子プロセス)側だと elves-chitchat-thread に
+            ;; 限らず色々となかったりする、欲しければ別途 require すること
+            ;;
+            ;; …なんだかこのコードを書いていて頭がとてもメタメタしてきたので
             ;; GEB か、Metamagical Themas 詠みませふ
-            (require 'elves-chitchat)
 
+            (require 'elves-chitchat)
             (require 'elves-utils)
 
             (let*

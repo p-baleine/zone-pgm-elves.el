@@ -21,8 +21,6 @@
 
 (require 'log4e)
 
-;; (elves--log-open-log)
-
 (log4e:deflogger
  "elves" "%t [%l] %m" "%H:%M:%S"
  '((fatal . "fatal")
@@ -31,6 +29,8 @@
    (info  . "info")
    (debug . "debug")
    (trace . "trace")))
+
+;; (elves--log-open-log) でログがみれる
 
 (provide 'elves-logging)
 ;;; elves-logging.el ends here

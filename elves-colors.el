@@ -42,7 +42,9 @@
   (concat
    "\e["
    (number-to-string (alist-get style elves-colors--colors))
-   "m"
+   ;; FIXME: なんか keuword 引数設定できない？？
+   ;; (when bold ";1")
+   ";1m"
    seq
    "\e[0m")))
 

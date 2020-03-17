@@ -34,6 +34,7 @@
 (require 'elves-artist)
 (require 'elves-chitchat)
 (require 'elves-librarian)
+(require 'elves-logging)
 (require 'elves-scrutinizer)
 (require 'elves-utils)
 
@@ -113,6 +114,12 @@ Retrieved from https://ja.wikipedia.org/wiki/%E3%83%89%E3%83%A9%E3%81%88%E3%82%8
 Format of quotes follows
 “RFC 3676 Text/Plain Format and DelSp Parameters”
 https://www.ietf.org/rfc/rfc3676.txt"
+  (elves--debug
+   "Elves will work behalf of you, [%s %s %s]."
+   (eieio-object-class-name librarian)
+   (eieio-object-class-name scrutinizer)
+   (eieio-object-class-name artist))
+
   (let* ((context (elves--get-context))
          (references
           (elves-enumerate-referencces librarian context))
@@ -120,6 +127,17 @@ https://www.ietf.org/rfc/rfc3676.txt"
           (elves-scrutinize-references scrutinizer references))
          (draft-buffer (elves--create-draft-buffer reference-loc))
          (line-count (elves--buffer-line-count draft-buffer)))
+
+    (elves--debug
+     "%s found references: %s"
+     (eieio-object-class-name librarian)
+     references)
+
+    (elves--debug
+     "%s elected reference: %s"
+     (eieio-object-class-name scrutinizer)
+     reference-loc)
+
     (unwind-protect
         (elves-chitchat-with-chitchat
           (setf (elves-artist-draft-buffer-of artist)

@@ -26,7 +26,6 @@
 
 (require 'elves-logging)
 
-;; TODO: ろぎんぐろぎんぐろぎんぐろぎんぐ
 ;; TODO: 検索条件をもっとfuzzyにする
 ;; TODO: 検索結果から検索に用いたファイルに関するエントリは除去する
 ;; TODO: 拡張子を考慮する、今 clj ファイル開いてるなら clj しか検索しないみたいな
@@ -35,7 +34,15 @@
   "Return a list of reference that would be searched by
 LIBRARIAN' based on `CONTEXT'."
   (let* ((patterns (elves-librarian--patterns-from context))
-         (cmd (elves-librarian-search-cmd-of librarian patterns))
+         (cmd
+          (let ((cmd
+                 (elves-librarian-search-cmd-of librarian patterns)))
+            ;; NOTE: 自動的に librarian のクラス名をログに含めたいね
+            (elves--debug
+             "%s will grep by command: `%s'"
+             (eieio-object-class-name librarian)
+             cmd)
+            cmd))
          (output (shell-command-to-string cmd))
          (cwd
          (s-trim
@@ -61,9 +68,6 @@ LIBRARIAN' based on `CONTEXT'."
 
 (cl-defmethod elves-librarian-search-cmd-of
   ((librarian elves-librarian) patterns)
-  (elves--debug "%s will search via `%s'"
-                (eieio-object-class-name librarian)
-                (elves-librarian--search-cmd patterns))
   (elves-librarian--search-cmd patterns))
 
 (defclass elves-librarian-@corridors_of_time (elves-librarian) ()
@@ -72,10 +76,6 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
 
 (cl-defmethod elves-librarian-search-cmd-of
   ((librarian elves-librarian-@corridors_of_time) patterns)
-  ;; FIXME: 多分ここら辺(debug logging 周り)、around とか使えばスッキリできるんじゃない？
-  (elves--debug "%s will search via `%s'"
-                (eieio-object-class-name librarian)
-                (elves-librarian--search-cmd patterns))
   (elves-librarian--search-cmd
    patterns
    ;; FIXME: head で絞らないと「zsh:1: 引数リストが長すぎます: git」と怒られる
@@ -151,6 +151,8 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
 
 (cl-defmethod elves-librarian-reference-contents-of
   ((reference elves-librarian-reference-@corridors_of_time))
+  ;; FIXME: ここ二度呼ぶのまじでやめて
+  ;; FIXME: 一々 temporary な worktree が projectile に登録されるのやめて
   ;; FIXME: テスト書けよ
   (let* ((commit-ish
           (elves-librarian-reference-commit-hash-of reference))
@@ -162,9 +164,7 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
           (let ((path (f-join "/" "tmp" dir-name)))
             (mkdir path t)
             path)))
-    (elves--debug
-     "Add worktree of %s at %s"
-     commit-ish work-dir)
+    (elves--debug "Add worktree of %s at %s" commit-ish work-dir)
     (shell-command-to-string
      (s-join
       " "

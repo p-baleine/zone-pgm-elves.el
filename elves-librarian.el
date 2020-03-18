@@ -57,7 +57,8 @@
                  :commit-hash (nth 0 it)
                  :path (nth 1 it)
                  :line-number (string-to-number (nth 2 it))
-                 :column (string-to-number (nth 3 it)))))))
+                 :column (string-to-number (nth 3 it))
+                 :matching (nth 4 it))))))
 
 (defclass elves-librarian ()
   ((search-cmd
@@ -67,7 +68,7 @@
     :initform 'elves-librarian-reference-local)))
 
 (cl-defmethod elves-librarian-search-cmd-of
-  ((librarian elves-librarian) patterns)
+  ((_librarian elves-librarian) patterns)
   (elves-librarian--search-cmd patterns))
 
 (defclass elves-librarian-@corridors_of_time (elves-librarian) ()
@@ -75,7 +76,7 @@
 https://www.youtube.com/watch?v=9ECai7f2Y40")
 
 (cl-defmethod elves-librarian-search-cmd-of
-  ((librarian elves-librarian-@corridors_of_time) patterns)
+  ((_librarian elves-librarian-@corridors_of_time) patterns)
   (elves-librarian--search-cmd
    patterns
    ;; FIXME: head で絞らないと「zsh:1: 引数リストが長すぎます: git」と怒られる
@@ -83,7 +84,7 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
    :commit-objects-cmd "git rev-list --all | head -n 10"))
 
 (cl-defmethod elves-librarian-reference-class-of
-  ((librarian elves-librarian-@corridors_of_time))
+  ((_librarian elves-librarian-@corridors_of_time))
   'elves-librarian-reference-@corridors_of_time)
 
 (defclass elves-librarian-reference ()
@@ -112,6 +113,10 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
     :initarg :column
     :accessor elves-librarian-reference-column-of
     :type number)
+   (matching
+    :initarg :matching
+    :accessor elves-librarian-reference-matching-of
+    :type string)
    (offset
     :initarg :offset
     :accessor elves-librarian-reference-offset-of
@@ -133,13 +138,13 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
         (line-number
          (elves-librarian-reference-line-number-of reference))
         (column
-         (elves-librarian-reference-column-of reference)))
+         (elves-librarian-reference-column-of reference))
+        (matching
+         (elves-librarian-reference-matching-of reference)))
     (with-current-buffer buffer
       (goto-char (point-min))
       (forward-line (1- line-number))
-      ;; FIXME: 行末ではなく検索でヒットした内容の末尾に移動するようにする
-      ;; (forward-char column)
-      (end-of-line)
+      (forward-char (+ column (string-width matching)))
       (point))))
 
 (cl-defmethod elves-librarian-reference-contents-of
@@ -188,7 +193,7 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
          (s-join
           " "
           '("git --no-pager grep --line-number --column -I"
-            "--no-color --full-name -e")))
+            "--no-color --full-name --only-matching -e")))
         (search-cmd-postfix
          (s-join
           " "
@@ -197,7 +202,8 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
             ")"
             "--"
             "$(git rev-parse --show-toplevel)"
-            "| gawk -F ':' '{print $1 \"\t\" $2 \"\t\" $3 \"\t\" $4}'"))))
+            "| gawk -F ':'"
+            "'{print $1 \"\t\" $2 \"\t\" $3 \"\t\" $4 \"\t\" $5}'"))))
     (s-join " "
       (list search-cmd-prefix patterns search-cmd-postfix))))
 

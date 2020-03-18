@@ -43,7 +43,7 @@
    (line-frames :initform nil
      :accessor elves-artist-line-frames-of)))
 
-(cl-defmethod elves-artist-completed? ((artist elves-artist))
+(cl-defmethod elves-artist-completed? ((_artist elves-artist))
   ;; TODO: ↓これ、嘘じゃない？
   (eobp))
 
@@ -78,7 +78,7 @@
    (rg :initform (elves-sample-from-normd-prepared)
      :accessor elves-artist-temperament-sanguine-mixin-rg-of)))
 
-(cl-defgeneric elves-artist-tweak-spf (artist seconds)
+(cl-defgeneric elves-artist-tweak-spf (_artist seconds)
   seconds)
 
 (cl-defmethod elves-artist-tweak-spf

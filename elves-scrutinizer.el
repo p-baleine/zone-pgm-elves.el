@@ -43,7 +43,7 @@ of `(file-path . point)'."
 (defclass elves-probabilistic-scrutinizer () ())
 
 (cl-defmethod elves-scrutinize-references
-  ((scrutinizer elves-probabilistic-scrutinizer) references)
+  ((_scrutinizer elves-probabilistic-scrutinizer) references)
   (let* ((n (random (length references))))
     (nth n references)))
 

@@ -23,7 +23,8 @@
            :repository-url ""
            :path file
            :line-number 2
-           :column 37))
+           :column 37
+           :matching "\n"))
          (draft (elves--create-draft-buffer reference))
          (expected (with-current-buffer (find-file-noselect file)
                      (buffer-substring 65 (point-max)))))

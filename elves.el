@@ -129,8 +129,7 @@ https://www.ietf.org/rfc/rfc3676.txt"
           (elves-enumerate-referencces librarian context))
          (reference-loc
           (elves-scrutinize-references scrutinizer references))
-         (draft-buffer (elves--create-draft-buffer reference-loc))
-         (line-count (elves--buffer-line-count draft-buffer)))
+         (draft-buffer (elves--create-draft-buffer reference-loc)))
 
     (elves--debug
      "%s found references: %s"

@@ -20,19 +20,19 @@
     (should (equal "Lib/test/support/testresult.py"
                    (elves-librarian-reference-path-of
                     (nth 0 references))))
-    (should (equal 4430
+    (should (equal 4431
                    (elves-librarian-reference-offset-of
                     (nth 0 references))))
     (should (equal "Lib/test/support/testresult.py"
                    (elves-librarian-reference-path-of
                     (nth 1 references))))
-    (should (equal 4481
+    (should (equal 4482
                    (elves-librarian-reference-offset-of
                     (nth 1 references))))
     (should (equal "Lib/unittest/runner.py"
                    (elves-librarian-reference-path-of
                     (nth 7 references))))
-    (should (equal 3484
+    (should (equal 3485
                    (elves-librarian-reference-offset-of
                     (nth 7 references))))
 

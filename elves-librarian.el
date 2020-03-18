@@ -71,12 +71,12 @@
   ((_librarian elves-librarian) patterns)
   (elves-librarian--search-cmd patterns))
 
-(defclass elves-librarian-@時の回廊 (elves-librarian) ()
+(defclass elves-librarian@時の回廊 (elves-librarian) ()
   "はい
 https://www.youtube.com/watch?v=9ECai7f2Y40")
 
 (cl-defmethod elves-librarian-search-cmd-of
-  ((_librarian elves-librarian-@時の回廊) patterns)
+  ((_librarian elves-librarian@時の回廊) patterns)
   (elves-librarian--search-cmd
    patterns
    ;; FIXME: head で絞らないと「zsh:1: 引数リストが長すぎます: git」と怒られる
@@ -84,7 +84,7 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
    :commit-objects-cmd "git rev-list --all | head -n 10"))
 
 (cl-defmethod elves-librarian-reference-class-of
-  ((_librarian elves-librarian-@時の回廊))
+  ((_librarian elves-librarian@時の回廊))
   'elves-librarian-reference-@時の回廊)
 
 (defclass elves-librarian-reference ()
@@ -202,6 +202,7 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
             ")"
             "--"
             "$(git rev-parse --show-toplevel)"
+            ;; FIXME: gawk 必須なのなんとかならないかしら？
             "| gawk -F ':'"
             "'{print $1 \"\t\" $2 \"\t\" $3 \"\t\" $4 \"\t\" $5}'"))))
     (s-join " "

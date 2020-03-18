@@ -57,8 +57,6 @@
       (iter-yield (nth idx lyrics))
       (cl-incf idx))))
 
-;; NOTE: 中二としては lain 版の chitchat も作ってほしい
-
 (cl-iter-defun elves-chitchat-thread-human-declined ()
   ;; NOTE: https://twitter.com/youseisan_ から on the fly で台詞とってくる
   ;; ここどうせ非同期で動くので、インターネットにアクセスする際の

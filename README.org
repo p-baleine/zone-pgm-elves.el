@@ -49,3 +49,9 @@ very very かわいいの and I respect COOL JAPAN(which are referred as “か�
 ** 閑話休題
 This is just a joke program. I 萌える this sort of programs that do not seriously
 contribute to GNU and GDP.
+
+* Prerequisite
++ Git >= 2.7.0
+
+* License
+Elves is released under the [[http://www.wtfpl.net/][WTFPL LICENSE]].

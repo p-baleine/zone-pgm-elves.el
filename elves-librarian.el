@@ -71,12 +71,12 @@
   ((_librarian elves-librarian) patterns)
   (elves-librarian--search-cmd patterns))
 
-(defclass elves-librarian-@corridors_of_time (elves-librarian) ()
+(defclass elves-librarian-@時の回廊 (elves-librarian) ()
   "はい
 https://www.youtube.com/watch?v=9ECai7f2Y40")
 
 (cl-defmethod elves-librarian-search-cmd-of
-  ((_librarian elves-librarian-@corridors_of_time) patterns)
+  ((_librarian elves-librarian-@時の回廊) patterns)
   (elves-librarian--search-cmd
    patterns
    ;; FIXME: head で絞らないと「zsh:1: 引数リストが長すぎます: git」と怒られる
@@ -84,8 +84,8 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
    :commit-objects-cmd "git rev-list --all | head -n 10"))
 
 (cl-defmethod elves-librarian-reference-class-of
-  ((_librarian elves-librarian-@corridors_of_time))
-  'elves-librarian-reference-@corridors_of_time)
+  ((_librarian elves-librarian-@時の回廊))
+  'elves-librarian-reference-@時の回廊)
 
 (defclass elves-librarian-reference ()
   ;; reference って librarian とは別な概念な気がするのでファイル分けたほうが
@@ -127,7 +127,7 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
 (defclass elves-librarian-reference-local
   (elves-librarian-reference) ())
 
-(defclass elves-librarian-reference-@corridors_of_time
+(defclass elves-librarian-reference-@時の回廊
   (elves-librarian-reference) ())
 
 ;; FIXME: これは generic なのでは？？
@@ -155,7 +155,7 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
     (elves-librarian-reference-path-of reference))))
 
 (cl-defmethod elves-librarian-reference-contents-of
-  ((reference elves-librarian-reference-@corridors_of_time))
+  ((reference elves-librarian-reference-@時の回廊))
   ;; FIXME: ここ二度呼ぶのまじでやめて
   ;; FIXME: 一々 temporary な worktree が projectile に登録されるのやめて
   ;; FIXME: テスト書けよ

@@ -75,17 +75,17 @@
 (defun elves-sanguine ()
   (elves-pgm :artist (make-instance 'elves-sanguine-artist)))
 
-(defun elves-sanguine-@corridors_of_time ()
-  ;; 時の回廊ですよ♪、光田さんですよ♪♪♪
+(defun elves-sanguine-@時の回廊 ()
+  ;; 光田さんですよ♪♪♪
   ;;
-  ;; …最近は、自分が男か女か、何歳なのかよく分からないのです(元々なのでは？)
-  ;; 記憶も曖昧…3 秒前のことも覚えてなかったりします(元々なのでは？)
+  ;; …最近は、自分が何歳なのか、男か女か、よく分からないのです(元々なのでは？)
+  ;; 記憶も曖昧…3 歩前のことも覚えてなかったりします(元々なのでは？)
   ;; そろそろ人としての自信もないのです(…困ったなぁ 😅)
   ;; なんか僕もうだめな気がしてきました(…今更？)…へへ 😂
   (elves-pgm
    :artist (make-instance 'elves-sanguine-artist)
    :scrutinizer (make-instance 'elves-probabilistic-scrutinizer)
-   :librarian (make-instance 'elves-librarian-@corridors_of_time)))
+   :librarian (make-instance 'elves-librarian-@時の回廊)))
 
 (defun elves-phlegmatic ()
   (elves-pgm :artist (make-instance 'elves-phlegmatic-artist)))

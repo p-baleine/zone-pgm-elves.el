@@ -75,7 +75,7 @@
 (defun elves-sanguine ()
   (elves-pgm :artist (make-instance 'elves-sanguine-artist)))
 
-(defun elves-sanguine-@時の回廊 ()
+(defun elves-sanguine@時の回廊 ()
   ;; 光田さんですよ♪♪♪
   ;;
   ;; …最近は、自分が何歳なのか、男か女か、よく分からないのです(元々なのでは？)
@@ -85,7 +85,7 @@
   (elves-pgm
    :artist (make-instance 'elves-sanguine-artist)
    :scrutinizer (make-instance 'elves-probabilistic-scrutinizer)
-   :librarian (make-instance 'elves-librarian-@時の回廊)))
+   :librarian (make-instance 'elves-librarian@時の回廊)))
 
 (defun elves-phlegmatic ()
   (elves-pgm :artist (make-instance 'elves-phlegmatic-artist)))
@@ -129,7 +129,8 @@ https://www.ietf.org/rfc/rfc3676.txt"
           (elves-enumerate-referencces librarian context))
          (reference-loc
           (elves-scrutinize-references scrutinizer references))
-         (draft-buffer (elves--create-draft-buffer reference-loc)))
+         (draft-buffer (elves--create-draft-buffer reference-loc))
+         (window (get-buffer-window)))
 
     (elves--debug
      "%s found references: %s"
@@ -143,12 +144,24 @@ https://www.ietf.org/rfc/rfc3676.txt"
 
     (unwind-protect
         (elves-chitchat-with-chitchat
-          (setf (elves-artist-draft-buffer-of artist)
-                draft-buffer)
-          (while (and (not (input-pending-p))
-                      (not (elves-artist-completed? artist)))
-            (elves-artist-depict artist)))
+         (setf (elves-artist-draft-buffer-of artist)
+               draft-buffer)
+         (while (and (not (input-pending-p))
+                     (not (elves-artist-completed? artist)))
+           (elves-artist-depict artist)
+           ;; FIXME: スクロールで追従するようにする
+           ;; (with-selected-window window
+           ;;   (when (<= (- (window-end) (point)) 500)
+           ;;     ;; FIXME: ここ window-adjuster みたいなオブジェクトにきりだして
+           ;;     ;; そもそも毎回実行しているのがやだ、あと色々乱数でぶらして
+           ;;     (cl-loop for x from 0 while (< x 10)
+           ;;              do (progn
+           ;;                   (scroll-up-line 1)
+           ;;                   (sit-for 0.2)))))
+           ))
       (kill-buffer draft-buffer))))
+
+;; (zone-call #'elves-sanguine@時の回廊)
 
 (provide 'elves)
 ;;; elves.el ends here

@@ -22,9 +22,8 @@ to reassess true value of faxes(*2).
 
 I am living in Japan 🗻.
 And I really like the sence of Japanese that respect traditions and
-conserve their country. As a human(？じしんないですよ👼) that has residence
-status, I want to contribute to productivity of Japan and I create
-this repository.
+conserve their country. As a human(？👼) that has residence status, I want to
+ contribute to productivity of Japan and I create this repository.
 
 This repository(elves.el 🌼🌼) takes a hint from “The Elves and the Shoemaker”
 in [[https://en.wikipedia.org/wiki/Grimms%27_Fairy_Tales][Grimm's Fairy Tales]]. This program will work on behalf of you(me).
@@ -49,3 +48,9 @@ very very かわいいの and I respect COOL JAPAN(which are referred as “か�
 ** 閑話休題
 This is just a joke program. I 萌える this sort of programs that do not seriously
 contribute to GNU and GDP.
+
+* Prerequisite
++ Git >= 2.7.0
+
+* License
+Elves is released under the [[http://www.wtfpl.net/][WTFPL LICENSE]].

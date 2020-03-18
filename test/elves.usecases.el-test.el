@@ -53,6 +53,15 @@ The test case name would be `zone-pgm-elves/test-usecase-<USECASE file name>'.
            (let* ((actual (buffer-substring
                            ,(car expected-range)
                            ,(+ (cdr expected-range) scoc)))
+                  ;; ここ遅いんだよなぁ、まぁ elisp で書かれているので仕方ない
+                  ;; https://www.emacswiki.org/emacs/levenshtein.el
+                  ;;
+                  ;; Dynamic module を活用して C かなにかで実装したら
+                  ;; どうかと思う
+                  ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Dynamic-Modules.html
+                  ;;
+                  ;; ただよくわからないのが、elpa とかにもしパッケージを
+                  ;; 公開する場合、so ファイルをいつ作るべきなのか分からない
                   (distance (levenshtein-distance actual ,expected)))
              (print (format "The destunce of expected and actual strings are %d."
                             distance))

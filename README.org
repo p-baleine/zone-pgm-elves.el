@@ -25,16 +25,17 @@ And I really like the sence of Japanese that respect traditions and
 conserve their country. As a human(？👼) that has residence status, I want to
  contribute to productivity of Japan and I create this repository.
 
-This repository(elves.el 🌼🌼) takes a hint from “The Elves and the Shoemaker”
-in [[https://en.wikipedia.org/wiki/Grimms%27_Fairy_Tales][Grimm's Fairy Tales]]. This program will work on behalf of you(me).
+This repository(elves.el 🌼🌼🎉) takes a hint from “The Elves and the
+Shoemaker” in [[https://en.wikipedia.org/wiki/Grimms%27_Fairy_Tales][Grimm's Fairy Tales]].
+This program will work on behalf of you(me).
 When you are sleeping, elves may complete your(my) tasks of tomorrow.
-Elves(and I) do not have human rights and are not restricted
+Elves(and I) do not have human rights and are not regulated
 by *any* laws(e.g. “労基法”).
 So you can contribute to Japanese productivity without any effort!
 
-This program may yet contain defects and Elves may yet produce incomplete code.
+This program may yet contain defects and elves may yet produce incomplete code.
 I'll make effort with elves to contribute to Japanese productivity. And I
-respect Japanese openness so PRs are welcome!
+respect Japanese openness so PRs are welcome! ✨✨
 
 By the way, I quote the name of “elves” from “某 衰退”. Elves of “某 衰退” are
 very very かわいいの and I respect COOL JAPAN(which are referred as “かっこいい
@@ -47,10 +48,11 @@ very very かわいいの and I respect COOL JAPAN(which are referred as “か�
 
 ** 閑話休題
 This is just a joke program. I 萌える this sort of programs that do not seriously
-contribute to GNU and GDP.
+contribute to [[https://www.gnu.org/][GNU]] or [[https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG?locations=JP][GDP(growth)]].
 
 * Prerequisite
 + Git >= 2.7.0
++ gawk
 
 * License
 Elves is released under the [[http://www.wtfpl.net/][WTFPL LICENSE]].

@@ -5,18 +5,17 @@
 (require 'elves-librarian)
 
 (ert-deftest elves-test-elves-enumerate-quotes ()
-  (let* ((librarian (make-instance 'elves-librarian))
-         (default-directory elves-test--example-cpython-path)
-         (quotes (elves-enumerate-quotes
-                      librarian
-                      "f.printErrorList('ERROR', self.errors)
+  (let* ((the-context "f.printErrorList('ERROR', self.errors)
         self.printErrorList('FAIL', self.failures)
 
     def printErrorList(self, flavour, errors):
         for test, err in errors:
             self.stream.writeln(self.separator1)
             self.stream.writeln(\"%s: %s\" % (flavour,self.getDescription(test)))
-")))
+")
+         (librarian (make-instance 'elves-librarian 'context the-context))
+         (default-directory elves-test--example-cpython-path)
+         (quotes (elves-enumerate-quotes librarian)))
     (should (equal "Lib/test/support/testresult.py"
                    (elves-quote-path-of (nth 0 quotes))))
     (should (equal 4431

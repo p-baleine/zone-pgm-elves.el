@@ -118,9 +118,13 @@ https://www.ietf.org/rfc/rfc3676.txt"
    (eieio-object-class-name scrutinizer)
    (eieio-object-class-name artist))
 
-  (let* ((context (elves--get-context))
+  (let* ((the-context (elves--get-context))
          (quotes
-          (elves-enumerate-quotes librarian context))
+          (progn
+            (setf
+             (elves-librarian-keyword-enumerable-context-of librarian)
+             the-context)
+            (elves-enumerate-quotes librarian)))
          (the-quote
           (elves-scrutinize-quotes scrutinizer quotes))
          (draft-buffer (elves--create-draft-buffer the-quote))

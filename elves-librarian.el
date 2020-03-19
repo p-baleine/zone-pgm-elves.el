@@ -31,7 +31,13 @@
 ;; TODO: 検索結果から検索に用いたファイルに関するエントリは除去する
 ;; TODO: 拡張子を考慮する、今 clj ファイル開いてるなら clj しか検索しないみたいな
 
-(defclass elves-librarian ()
+(defclass elves-librarian-keyword-enumerable-mixin ()
+  ((context
+    :initarg context
+    :accessor elves-librarian-keyword-enumerable-context-of)))
+
+(defclass elves-librarian
+  (elves-librarian-keyword-enumerable-mixin)
   ((search-cmd
     :accessor elves-librarian-search-cmd-of)
    (quote-class
@@ -42,19 +48,26 @@
   "はい
 https://www.youtube.com/watch?v=9ECai7f2Y40")
 
-(cl-defgeneric elves-enumerate-quotes (librarian context)
+(cl-defmethod elves-librarian--debug
+  ((librarian elves-librarian) msg &rest args)
+  (apply #'elves--debug
+         (s-join " " (list "Librarian %s," msg))
+         (eieio-object-class-name librarian)
+         `,@args))
+
+(cl-defgeneric elves-enumerate-quotes (librarian)
   "Return a list of `QUOTE's that would be searched by
-`LIBRARIAN' based on `CONTEXT'."
+`LIBRARIAN'."
   ;; FIXME: TEST 書いてからもう少し綺麗にして
-  (let* ((patterns (elves-librarian--patterns-from context))
+  (cl-assert
+   (elves-librarian-keyword-enumerable-context-of librarian))
+
+  (let* ((patterns (elves-librarian-emurate-keywords librarian))
          (cmd
           (let ((cmd
                  (elves-librarian-search-cmd-of librarian patterns)))
-            ;; NOTE: 自動的に librarian のクラス名をログに含めたいね
-            (elves--debug
-             "%s will grep by command: `%s'"
-             (eieio-object-class-name librarian)
-             cmd)
+            (elves-librarian--debug
+             librarian "grep by command: `%s'" cmd)
             cmd))
          (output (shell-command-to-string cmd))
          (cwd
@@ -72,6 +85,18 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
                  :line-number (string-to-number (nth 2 it))
                  :column (string-to-number (nth 3 it))
                  :matching (nth 4 it))))))
+
+(cl-defgeneric elves-librarian-emurate-keywords (keyword-enumerator)
+  (let ((context
+         (elves-librarian-keyword-enumerable-context-of
+          keyword-enumerator)))
+    (->> (s-split "\n" context)
+       (-map #'s-trim)
+       (-remove #'s-blank?)
+       (-map #'shell-quote-argument)
+       (s-join  " --or -e "))))
+
+;; pattern generatorとsearch-cmd generatorを別のクラスにきりだしたい
 
 (cl-defmethod elves-librarian-search-cmd-of
   ((_librarian elves-librarian) patterns)
@@ -91,12 +116,12 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
 
 ;; Utilty.
 
-(defun elves-librarian--patterns-from (context)
-  (->> (s-split "\n" context)
-       (-map #'s-trim)
-       (-remove #'s-blank?)
-       (-map #'shell-quote-argument)
-       (s-join  " --or -e ")))
+;; (defun elves-librarian--patterns-from (context)
+;;   (->> (s-split "\n" context)
+;;        (-map #'s-trim)
+;;        (-remove #'s-blank?)
+;;        (-map #'shell-quote-argument)
+;;        (s-join  " --or -e ")))
 
 (cl-defun elves-librarian--search-cmd
     (patterns &key (commit-objects-cmd "git rev-parse HEAD"))

@@ -91,7 +91,7 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
     '("git rev-list --no-merges --remove-empty --all --max-count 1000"
       "shuf" ;; shuf って Mac とかなくないか？？
       "head -n 5"))
-   :case-insensitive t
+   :case-insensitive nil
    :perl-regexp t))
 
 (cl-defmethod elves-librarian-quote-class-of

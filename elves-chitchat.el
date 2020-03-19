@@ -95,7 +95,7 @@
     (while t
       (let ((l (nth (random (length lyrics)) lyrics))
             (s (nth (random (length smiles)) smiles))
-            (ts (format-time-string "%H:%M")))
+            (ts (format-time-string "%H:%M:%S")))
         (iter-yield
          (concat ts (🎨 (format "\t<%s>\t" s)) l))))))
 

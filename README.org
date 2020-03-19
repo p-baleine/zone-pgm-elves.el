@@ -52,7 +52,18 @@ contribute to [[https://www.gnu.org/][GNU]] or [[https://data.worldbank.org/indi
 
 * Prerequisite
 + Git >= 2.7.0
-+ gawk
+
+* Usage
+TBD
+
+* Acknowledgment
+TBD
+
++ [[https://github.com/jwiegley/emacs-async][jwiegley/emacs-async]]
++ [[https://github.com/magnars/dash.el][magnars/dash.e]]
++ [[https://github.com/rejeep/f.el][rejeep/f.el]]
++ [[https://github.com/aki2o/log4e][aki2o/log4e]]
++ [[https://github.com/magnars/s.el][magnars/s.el]]
 
 * License
 Elves is released under the [[http://www.wtfpl.net/][WTFPL LICENSE]].

@@ -89,7 +89,7 @@
 
 (cl-defun elves-pgm
     (&key
-     (librarian (make-instance 'elves-librarian))
+     (librarian (make-instance 'elves-librarian-naive))
      (scrutinizer (make-instance 'elves-deterministic-scrutinizer))
      (artist (make-instance 'elves-phlegmatic-artist)))
   "A Zone Mode where elves will work on behalf of you.

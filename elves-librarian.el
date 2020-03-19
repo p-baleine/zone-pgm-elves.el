@@ -31,25 +31,14 @@
 ;; TODO: 検索結果から検索に用いたファイルに関するエントリは除去する
 ;; TODO: 拡張子を考慮する、今 clj ファイル開いてるなら clj しか検索しないみたいな
 
-(defclass elves-librarian-keyword-enumerable-mixin () ())
-
-(defclass elves-librarian-keyword-enumerable-fuzzily-mixin
-  (elves-librarian-keyword-enumerable-mixin)
-  ((maxlength
-    :initarg maxlength
-    :initform 100
-    :accessor elves-librarian-keyword-enumerable-fuzzily-length-of)))
-
-;; FIXME: librarianはmixin継承しないで別途クラスつくる
-(defclass elves-librarian
-  (elves-librarian-keyword-enumerable-mixin)
+(defclass elves-librarian ()
   ((search-cmd
     :accessor elves-librarian-search-cmd-of)
    (quote-class
     :accessor elves-librarian-quote-class-of
     :initform 'elves-quote-head)))
 
-(defclass elves-librarian@時の回廊 (elves-librarian) ()
+(defclass elves-librarian-historical (elves-librarian) ()
   "はい
 https://www.youtube.com/watch?v=9ECai7f2Y40")
 
@@ -88,6 +77,38 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
                  :column (string-to-number (nth 3 it))
                  :matching (nth 4 it))))))
 
+(cl-defmethod elves-librarian-search-cmd-of
+  ((_librarian elves-librarian) patterns)
+  (elves-librarian--search-cmd patterns))
+
+(cl-defmethod elves-librarian-search-cmd-of
+  ((_librarian elves-librarian-historical) patterns)
+  (elves-librarian--search-cmd
+   patterns
+   :commit-objects-cmd
+   (s-join
+    " | "
+    '("git rev-list --no-merges --remove-empty --all --max-count 1000"
+      "shuf" ;; shuf って Mac とかなくないか？？
+      "head -n 5"))
+   :case-insensitive t
+   :perl-regexp t))
+
+(cl-defmethod elves-librarian-quote-class-of
+  ((_librarian elves-librarian-historical))
+  'elves-quote)
+
+;; Mixins.
+
+(defclass elves-librarian-keyword-enumerable-mixin () ())
+
+(defclass elves-librarian-keyword-enumerable-fuzzily-mixin
+  (elves-librarian-keyword-enumerable-mixin)
+  ((maxlength
+    :initarg maxlength
+    :initform 20
+    :accessor elves-librarian-keyword-enumerable-fuzzily-length-of)))
+
 ;; FIXME: contextは引数でもらうようにする
 (cl-defgeneric elves-librarian-emurate-keywords
     (_enumerator context)
@@ -118,34 +139,33 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
                collect c))
              (str (apply #'string (reverse chars)))
              (words (-> str (shell-quote-argument) (s-split-words)))
-             (pattern (s-join ".*" `("" ,@words ""))))
-        (s-join "" (list "-e \"" pattern "\""))))))
+             (pattern (s-join ".*" `("" ,@words "$"))))
+        (s-join "" (list "\"" pattern "\""))))))
 
-(cl-defmethod elves-librarian-search-cmd-of
-  ((_librarian elves-librarian) patterns)
-  (elves-librarian--search-cmd patterns))
+(defclass elves-librarian-naive
+  (elves-librarian
+   elves-librarian-keyword-enumerable-mixin) ())
 
-(cl-defmethod elves-librarian-search-cmd-of
-  ((_librarian elves-librarian@時の回廊) patterns)
-  (elves-librarian--search-cmd
-   patterns
-   ;; FIXME: head で絞らないと「zsh:1: 引数リストが長すぎます: git」と怒られる
-   ;; なんでだろう？？
-   :commit-objects-cmd "git rev-list --all | head -n 10"))
-
-(cl-defmethod elves-librarian-quote-class-of
-  ((_librarian elves-librarian@時の回廊))
-  'elves-quote)
+(defclass elves-librarian@時の回廊
+  (elves-librarian-historical
+   elves-librarian-keyword-enumerable-fuzzily-mixin) ())
 
 ;; Utilty.
 
 (cl-defun elves-librarian--search-cmd
-    (patterns &key (commit-objects-cmd "git rev-parse HEAD"))
+    (patterns &key (commit-objects-cmd "git rev-parse HEAD")
+              ;; テスト通らないからとりあえずオプション受け付けるようにしてる
+              ;; FIXME: …こういうことしてると段々収集つかなくなるのでやめよう
+              (case-insensitive nil)
+              (perl-regexp nil))
   (let ((search-cmd-prefix
          (s-join
           " "
-          '("git --no-pager grep --line-number --column -I"
-            "--no-color --full-name --only-matching -e")))
+          `("git --no-pager grep --line-number --column -I"
+            "--no-color --full-name --only-matching"
+            ,(if case-insensitive "-i" "")
+            ,(if perl-regexp "-P" "")
+            "-e")))
         (search-cmd-postfix
          (s-join
           " "
@@ -154,9 +174,12 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
             ")"
             "--"
             "$(git rev-parse --show-toplevel)"
-            ;; FIXME: gawk 必須なのなんとかならないかしら？
-            "| gawk -F ':'"
-            "'{print $1 \"\t\" $2 \"\t\" $3 \"\t\" $4 \"\t\" $5}'"))))
+            "| perl -ple"
+            ,(s-join
+              ""
+              '("'s/"
+                "^\([^:]+\):\([^:]+\):\([^:]+\):\([^:]+\):\(.*\)$/"
+                "\\1\\t\\2\\t\\3\\t\\4\\t\\5/g'"))))))
     (s-join " "
       (list search-cmd-prefix patterns search-cmd-postfix))))
 

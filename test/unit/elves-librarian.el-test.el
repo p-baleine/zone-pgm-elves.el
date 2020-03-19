@@ -13,7 +13,7 @@
             self.stream.writeln(self.separator1)
             self.stream.writeln(\"%s: %s\" % (flavour,self.getDescription(test)))
 ")
-         (librarian (make-instance 'elves-librarian))
+         (librarian (make-instance 'elves-librarian-naive))
          (default-directory elves-test--example-cpython-path)
          (quotes (elves-enumerate-quotes librarian the-context)))
     (should (equal "Lib/test/support/testresult.py"
@@ -86,7 +86,7 @@ class RegressionTestResult(unittest.TextTestResult):"
       ;; context の、空白を抜きにして末尾から maxlength 遡ったところ
       ;; から末尾までの文字列について、単語で区切った上で各単語の間に `.*' を
       ;; 挟んでいてほしい
-      "-e \".*teln.*self.*separator2.*self.*stream.*writeln.*%s.*%err.*\""
+      "\".*teln.*self.*separator2.*self.*stream.*writeln.*%s.*%err.*$\""
       (elves-librarian-emurate-keywords enumerator the-context)))))
 
 ;;; elves-librarian.el-test.el ends here

@@ -21,6 +21,8 @@
 
 (require 'eieio)
 
+(require 'elves-logging)
+
 (defclass elves-deterministic-scrutinizer ()
   ((n :initarg :n
      :initform 0
@@ -44,6 +46,7 @@ of `(file-path . point)'."
 
 (cl-defmethod elves-scrutinize-quotes
   ((_scrutinizer elves-probabilistic-scrutinizer) quotes)
+  (elves--debug "Found %d quotes" (length quotes))
   (let* ((n (random (length quotes))))
     (nth n quotes)))
 

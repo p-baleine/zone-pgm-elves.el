@@ -143,14 +143,6 @@ https://www.ietf.org/rfc/rfc3676.txt"
                      (not (elves-artist-completed? artist)))
            (elves-artist-depict artist)
            ;; FIXME: スクロールで追従するようにする
-           ;; (with-selected-window window
-           ;;   (when (<= (- (window-end) (point)) 500)
-           ;;     ;; FIXME: ここ window-adjuster みたいなオブジェクトにきりだして
-           ;;     ;; そもそも毎回実行しているのがやだ、あと色々乱数でぶらして
-           ;;     (cl-loop for x from 0 while (< x 10)
-           ;;              do (progn
-           ;;                   (scroll-up-line 1)
-           ;;                   (sit-for 0.2)))))
            ))
       (kill-buffer draft-buffer))))
 

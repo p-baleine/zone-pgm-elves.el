@@ -36,6 +36,14 @@
     :initarg context
     :accessor elves-librarian-keyword-enumerable-context-of)))
 
+(defclass elves-librarian-keyword-enumerable-fuzzily-mixin
+  (elves-librarian-keyword-enumerable-mixin)
+  ((maxlength
+    :initarg maxlength
+    :initform 100
+    :accessor elves-librarian-keyword-enumerable-length-of)))
+
+;; FIXME: librarianはmixin継承しないで別途クラスつくる
 (defclass elves-librarian
   (elves-librarian-keyword-enumerable-mixin)
   ((search-cmd
@@ -86,6 +94,7 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
                  :column (string-to-number (nth 3 it))
                  :matching (nth 4 it))))))
 
+;; FIXME: contextは引数でもらうようにする
 (cl-defgeneric elves-librarian-emurate-keywords (keyword-enumerator)
   (let ((context
          (elves-librarian-keyword-enumerable-context-of
@@ -96,7 +105,31 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
        (-map #'shell-quote-argument)
        (s-join  " --or -e "))))
 
-;; pattern generatorとsearch-cmd generatorを別のクラスにきりだしたい
+(cl-defmethod elves-librarian-emurate-keywords
+  ((keyword-enumerator elves-librarian-keyword-enumerable-fuzzily-mixin))
+  (let ((context
+         (elves-librarian-keyword-enumerable-context-of
+          keyword-enumerator))
+        (maxlength
+         (elves-librarian-keyword-enumerable-length-of
+          keyword-enumerator)))
+    (with-temp-buffer
+      (insert context)
+      (goto-char (point-max))
+      (let* ((chars
+              (cl-loop
+               with len = 0 while (< len maxlength)
+               do (backward-char 1)
+               for c = (char-after)
+               for is-whitespace = (member c '(0 10 32))
+               unless is-whitespace
+               do (cl-incf len)
+               and
+               collect c))
+             (str (apply #'string (reverse chars)))
+             (words (-> str (shell-quote-argument) (s-split-words)))
+             (pattern (s-join ".*" `("" ,@words ""))))
+        (s-join "" (list "-e \"" pattern "\""))))))
 
 (cl-defmethod elves-librarian-search-cmd-of
   ((_librarian elves-librarian) patterns)
@@ -115,13 +148,6 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
   'elves-quote)
 
 ;; Utilty.
-
-;; (defun elves-librarian--patterns-from (context)
-;;   (->> (s-split "\n" context)
-;;        (-map #'s-trim)
-;;        (-remove #'s-blank?)
-;;        (-map #'shell-quote-argument)
-;;        (s-join  " --or -e ")))
 
 (cl-defun elves-librarian--search-cmd
     (patterns &key (commit-objects-cmd "git rev-parse HEAD"))

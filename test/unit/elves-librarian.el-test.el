@@ -52,4 +52,43 @@ class RegressionTestResult(unittest.TextTestResult):"
                         (nth 1 quotes))
                      (buffer-substring 1 100))))))
 
+(ert-deftest elves-test--elves-librarian-emurate-keywords ()
+  (let* ((the-context "
+            self.stream.writeln(\"%s: %s\" % (flavour,self.getDescription(test)))
+            self.stream.writeln(self.separator2)
+            self.stream.writeln(\"%s\" % err)")
+         (enumerator
+          (make-instance
+           'elves-librarian-keyword-enumerable-mixin
+           'context the-context)))
+    (should
+     (equal
+      (s-join
+       " --or -e "
+       (mapcar
+        #'shell-quote-argument
+        '(
+          "self.stream.writeln(\"%s: %s\" % (flavour,self.getDescription(test)))"
+          "self.stream.writeln(self.separator2)"
+          "self.stream.writeln(\"%s\" % err)")))
+      (elves-librarian-emurate-keywords enumerator)))))
+
+(ert-deftest elves-test--elves-librarian-emurate-keywords-fuzzy ()
+  (let* ((the-context "
+            self.stream.writeln(\"%s: %s\" % (flavour,self.getDescription(test)))
+            self.stream.writeln(self.separator2)
+            self.stream.writeln(\"%s\" % err)")
+         (enumerator
+          (make-instance
+           'elves-librarian-keyword-enumerable-fuzzily-mixin
+           'context the-context
+           'maxlength 50)))
+    (should
+     (equal
+      ;; context の、空白を抜きにして末尾から maxlength 遡ったところ
+      ;; から末尾までの文字列について、単語で区切った上で各単語の間に `.*' を
+      ;; 挟んでいてほしい
+      "-e \".*teln.*self.*separator2.*self.*stream.*writeln.*%s.*%err.*\""
+      (elves-librarian-emurate-keywords enumerator)))))
+
 ;;; elves-librarian.el-test.el ends here

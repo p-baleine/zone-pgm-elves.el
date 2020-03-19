@@ -13,9 +13,9 @@
             self.stream.writeln(self.separator1)
             self.stream.writeln(\"%s: %s\" % (flavour,self.getDescription(test)))
 ")
-         (librarian (make-instance 'elves-librarian 'context the-context))
+         (librarian (make-instance 'elves-librarian))
          (default-directory elves-test--example-cpython-path)
-         (quotes (elves-enumerate-quotes librarian)))
+         (quotes (elves-enumerate-quotes librarian the-context)))
     (should (equal "Lib/test/support/testresult.py"
                    (elves-quote-path-of (nth 0 quotes))))
     (should (equal 4431
@@ -59,8 +59,7 @@ class RegressionTestResult(unittest.TextTestResult):"
             self.stream.writeln(\"%s\" % err)")
          (enumerator
           (make-instance
-           'elves-librarian-keyword-enumerable-mixin
-           'context the-context)))
+           'elves-librarian-keyword-enumerable-mixin)))
     (should
      (equal
       (s-join
@@ -71,7 +70,7 @@ class RegressionTestResult(unittest.TextTestResult):"
           "self.stream.writeln(\"%s: %s\" % (flavour,self.getDescription(test)))"
           "self.stream.writeln(self.separator2)"
           "self.stream.writeln(\"%s\" % err)")))
-      (elves-librarian-emurate-keywords enumerator)))))
+      (elves-librarian-emurate-keywords enumerator the-context)))))
 
 (ert-deftest elves-test--elves-librarian-emurate-keywords-fuzzy ()
   (let* ((the-context "
@@ -81,7 +80,6 @@ class RegressionTestResult(unittest.TextTestResult):"
          (enumerator
           (make-instance
            'elves-librarian-keyword-enumerable-fuzzily-mixin
-           'context the-context
            'maxlength 50)))
     (should
      (equal
@@ -89,6 +87,6 @@ class RegressionTestResult(unittest.TextTestResult):"
       ;; から末尾までの文字列について、単語で区切った上で各単語の間に `.*' を
       ;; 挟んでいてほしい
       "-e \".*teln.*self.*separator2.*self.*stream.*writeln.*%s.*%err.*\""
-      (elves-librarian-emurate-keywords enumerator)))))
+      (elves-librarian-emurate-keywords enumerator the-context)))))
 
 ;;; elves-librarian.el-test.el ends here

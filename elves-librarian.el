@@ -31,17 +31,14 @@
 ;; TODO: 検索結果から検索に用いたファイルに関するエントリは除去する
 ;; TODO: 拡張子を考慮する、今 clj ファイル開いてるなら clj しか検索しないみたいな
 
-(defclass elves-librarian-keyword-enumerable-mixin ()
-  ((context
-    :initarg context
-    :accessor elves-librarian-keyword-enumerable-context-of)))
+(defclass elves-librarian-keyword-enumerable-mixin () ())
 
 (defclass elves-librarian-keyword-enumerable-fuzzily-mixin
   (elves-librarian-keyword-enumerable-mixin)
   ((maxlength
     :initarg maxlength
     :initform 100
-    :accessor elves-librarian-keyword-enumerable-length-of)))
+    :accessor elves-librarian-keyword-enumerable-fuzzily-length-of)))
 
 ;; FIXME: librarianはmixin継承しないで別途クラスつくる
 (defclass elves-librarian
@@ -63,14 +60,11 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
          (eieio-object-class-name librarian)
          `,@args))
 
-(cl-defgeneric elves-enumerate-quotes (librarian)
+(cl-defgeneric elves-enumerate-quotes (librarian context)
   "Return a list of `QUOTE's that would be searched by
 `LIBRARIAN'."
   ;; FIXME: TEST 書いてからもう少し綺麗にして
-  (cl-assert
-   (elves-librarian-keyword-enumerable-context-of librarian))
-
-  (let* ((patterns (elves-librarian-emurate-keywords librarian))
+  (let* ((patterns (elves-librarian-emurate-keywords librarian context))
          (cmd
           (let ((cmd
                  (elves-librarian-search-cmd-of librarian patterns)))
@@ -95,24 +89,20 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
                  :matching (nth 4 it))))))
 
 ;; FIXME: contextは引数でもらうようにする
-(cl-defgeneric elves-librarian-emurate-keywords (keyword-enumerator)
-  (let ((context
-         (elves-librarian-keyword-enumerable-context-of
-          keyword-enumerator)))
-    (->> (s-split "\n" context)
-       (-map #'s-trim)
-       (-remove #'s-blank?)
-       (-map #'shell-quote-argument)
-       (s-join  " --or -e "))))
+(cl-defgeneric elves-librarian-emurate-keywords
+    (_enumerator context)
+  (->> (s-split "\n" context)
+     (-map #'s-trim)
+     (-remove #'s-blank?)
+     (-map #'shell-quote-argument)
+     (s-join  " --or -e ")))
 
 (cl-defmethod elves-librarian-emurate-keywords
-  ((keyword-enumerator elves-librarian-keyword-enumerable-fuzzily-mixin))
-  (let ((context
-         (elves-librarian-keyword-enumerable-context-of
-          keyword-enumerator))
-        (maxlength
-         (elves-librarian-keyword-enumerable-length-of
-          keyword-enumerator)))
+  ((enumerator elves-librarian-keyword-enumerable-fuzzily-mixin)
+   context)
+  (let ((maxlength
+         (elves-librarian-keyword-enumerable-fuzzily-length-of
+          enumerator)))
     (with-temp-buffer
       (insert context)
       (goto-char (point-max))

@@ -4,6 +4,7 @@
 
 (require 'elves)
 (require 'elves-librarian)
+(require 'elves-reference)
 
 (ert-deftest elves-test-elves--get-context ()
   (let* ((file (elves-test--make-fixture-file))
@@ -19,7 +20,7 @@
   (let* ((file (elves-test--make-fixture-file))
          (reference
           (make-instance
-           'elves-librarian-reference-local
+           'elves-librarian-reference
            :repository-url ""
            :path file
            :line-number 2

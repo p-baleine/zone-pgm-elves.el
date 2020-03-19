@@ -25,6 +25,7 @@
 (require 's)
 
 (require 'elves-logging)
+(require 'elves-reference)
 
 ;; TODO: 検索条件をもっとfuzzyにする
 ;; TODO: 検索結果から検索に用いたファイルに関するエントリは除去する
@@ -65,7 +66,7 @@
     :accessor elves-librarian-search-cmd-of)
    (reference-class
     :accessor elves-librarian-reference-class-of
-    :initform 'elves-librarian-reference-local)))
+    :initform 'elves-librarian-reference)))
 
 (cl-defmethod elves-librarian-search-cmd-of
   ((_librarian elves-librarian) patterns)
@@ -86,99 +87,6 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
 (cl-defmethod elves-librarian-reference-class-of
   ((_librarian elves-librarian@時の回廊))
   'elves-librarian-reference-@時の回廊)
-
-(defclass elves-librarian-reference ()
-  ;; reference って librarian とは別な概念な気がするのでファイル分けたほうが
-  ;; よいのかな、と思う。
-  ;; …でも正直 CLOS(eieio か)って僕の常識が一切通用しないので、何が正しいのか
-  ;; 分からなく、ファイル分ける必要もないのかもしれない…そういう常識が通用しない
-  ;; 辺りが触っていて楽してく楽しくて、時間を忘れてしまいます > えいえいおお。
-  ((repository-url
-    :initarg :repository-url
-    :accessor elves-librarian-reference-repository-url-of
-    :type string)
-   (commit-hash
-    :initarg :commit-hash
-    :accessor elves-librarian-reference-commit-hash-of
-    :type string)
-   (path
-    :initarg :path
-    :accessor elves-librarian-reference-path-of
-    :type string)
-   (line-number
-    :initarg :line-number
-    :accessor elves-librarian-reference-line-number-of
-    :type number)
-   (column
-    :initarg :column
-    :accessor elves-librarian-reference-column-of
-    :type number)
-   (matching
-    :initarg :matching
-    :accessor elves-librarian-reference-matching-of
-    :type string)
-   (offset
-    :initarg :offset
-    :accessor elves-librarian-reference-offset-of
-    :type number)
-   (contents
-    :accessor elves-librarian-reference-contents-of)))
-
-(defclass elves-librarian-reference-local
-  (elves-librarian-reference) ())
-
-(defclass elves-librarian-reference-@時の回廊
-  (elves-librarian-reference) ())
-
-;; FIXME: これは generic なのでは？？
-(cl-defmethod elves-librarian-reference-offset-of
-  ((reference elves-librarian-reference))
-  (let ((buffer
-         (elves-librarian-reference-contents-of reference))
-        (line-number
-         (elves-librarian-reference-line-number-of reference))
-        (column
-         (elves-librarian-reference-column-of reference))
-        (matching
-         (elves-librarian-reference-matching-of reference)))
-    (with-current-buffer buffer
-      (goto-char (point-min))
-      (forward-line (1- line-number))
-      (forward-char (+ column (string-width matching)))
-      (point))))
-
-(cl-defmethod elves-librarian-reference-contents-of
-  ((reference elves-librarian-reference-local))
-  (find-file-noselect
-   (f-join
-    (elves-librarian-reference-repository-url-of reference)
-    (elves-librarian-reference-path-of reference))))
-
-(cl-defmethod elves-librarian-reference-contents-of
-  ((reference elves-librarian-reference-@時の回廊))
-  ;; FIXME: ここ二度呼ぶのまじでやめて
-  ;; FIXME: 一々 temporary な worktree が projectile に登録されるのやめて
-  ;; FIXME: テスト書けよ
-  (let* ((commit-ish
-          (elves-librarian-reference-commit-hash-of reference))
-         (dir-name (s-join
-                    "."
-                    `("zone-pgm-elves"
-                      ,(format-time-string "%s"))))
-         (work-dir
-          (let ((path (f-join "/" "tmp" dir-name)))
-            (mkdir path t)
-            path)))
-    (elves--debug "Add worktree of %s at %s" commit-ish work-dir)
-    (shell-command-to-string
-     (s-join
-      " "
-      `("git worktree add --detach"
-        ,work-dir ,commit-ish)))
-    (find-file-noselect
-     (f-join
-      work-dir
-      (elves-librarian-reference-path-of reference)))))
 
 (defun elves-librarian--patterns-from (context)
   (->> (s-split "\n" context)

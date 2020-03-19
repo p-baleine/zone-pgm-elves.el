@@ -13,41 +13,45 @@ valued in Japan.
 The “evolution”, which is called “働き方改革” and in charge of increasing
 productivity, is propagated unstoppably by the government.
 
-For example, in Japan, minister of information technology is trying to achieve
-codevelopment of digital transformation(DX) and stamps(“印鑑”), whereas
-stamps(“印鑑”) are regarded as outdated or inefficient generally(*1).
-Also, almost all of companies use faxes(“ファックス”), which are ancient
-communication tool using thermo-sensitive paper, on almost all of deals
-to reassess true value of faxes(*2).
+For example, in Japan, the minister of information technology is
+trying to achieve codevelopment of the digital transformation(DX)
+and stamps(“印鑑”), in spite of obsolescence of stamps(“印鑑”)(*1).
+Also, almost all of companies in Japan are using telefacsimile machines
+(Fax, which is called “ファックス” in Japan), which is an ancient
+communication tool using thermo-sensitive paper(*2), on almost all of
+deals to reassess true value of telefacsimile machines(*3).
 
-I am living in Japan 🗻.
+I am living in Japan 🌅.
 And I really like the sence of Japanese that respect traditions and
-conserve their country. As a human(？👼) that has residence status, I want to
- contribute to productivity of Japan and I create this repository.
+conserve traditions of their country. As a human(？) that has residence
+status at Japan, I want to contribute to productivity of Japan and
+I create this repository.
 
-This repository(elves.el 🌼🌼🎉) takes a hint from “The Elves and the
+This repository(/elves.el/ 🌼🌼🎉) takes a hint from “The Elves and the
 Shoemaker” in [[https://en.wikipedia.org/wiki/Grimms%27_Fairy_Tales][Grimm's Fairy Tales]].
 This program will work on behalf of you(me).
 When you are sleeping, elves may complete your(my) tasks of tomorrow.
-Elves(and I) do not have human rights and are not regulated
+Elves(and I) do not have *any* human rights and are not regulated
 by *any* laws(e.g. “労基法”).
-So you can contribute to Japanese productivity without any effort!
+So, together with /elves/,  you can contribute to Japanese productivity
+without any effort!
 
 This program may yet contain defects and elves may yet produce incomplete code.
-I'll make effort with elves to contribute to Japanese productivity. And I
-respect Japanese openness so PRs are welcome! ✨✨
+I am going to make effort with /elves/ to contribute to Japanese productivity.
+And I respect Japanese openness so PRs are welcome! ✨🎉🎉
 
 By the way, I quote the name of “elves” from “某 衰退”. Elves of “某 衰退” are
 very very かわいいの and I respect COOL JAPAN(which are referred as “かっこいい
-ニッポン”(*3)) and I ようせいいさんだいすきいいいいいです.
+ニッポン”(*4)) and I ようせいいさんだいすきいいいいいです.
 
 + *1: https://www.huffingtonpost.jp/entry/story_jp_5d7b46b3e4b077dcbd5bc5c2
-+ *2: https://www.bbc.com/news/business-34667380
++ *4: https://en.wikipedia.org/wiki/Fax
++ *3: https://www.bbc.com/news/business-34667380
   (流石にカセットテープは使ってないんじゃないだろうか？？)
-+ *3: https://www4.nhk.or.jp/cooljapan/
++ *4: https://www4.nhk.or.jp/cooljapan/
 
 ** 閑話休題
-This is just a joke program. I 萌える this sort of programs that do not seriously
+This is just a joke program. I 萌え this sort of programs that do not seriously
 contribute to [[https://www.gnu.org/][GNU]] or [[https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG?locations=JP][GDP(growth)]].
 
 * Prerequisite

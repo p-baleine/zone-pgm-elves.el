@@ -18,23 +18,17 @@
             self.stream.writeln(\"%s: %s\" % (flavour,self.getDescription(test)))
 ")))
     (should (equal "Lib/test/support/testresult.py"
-                   (elves-librarian-reference-path-of
-                    (nth 0 references))))
+                   (elves-quote-path-of (nth 0 references))))
     (should (equal 4431
-                   (elves-librarian-reference-offset-of
-                    (nth 0 references))))
+                   (elves-quote-offset-of (nth 0 references))))
     (should (equal "Lib/test/support/testresult.py"
-                   (elves-librarian-reference-path-of
-                    (nth 1 references))))
+                   (elves-quote-path-of (nth 1 references))))
     (should (equal 4482
-                   (elves-librarian-reference-offset-of
-                    (nth 1 references))))
+                   (elves-quote-offset-of (nth 1 references))))
     (should (equal "Lib/unittest/runner.py"
-                   (elves-librarian-reference-path-of
-                    (nth 7 references))))
+                   (elves-quote-path-of (nth 7 references))))
     (should (equal 3485
-                   (elves-librarian-reference-offset-of
-                    (nth 7 references))))
+                   (elves-quote-offset-of (nth 7 references))))
 
     (should (equal (substring
 "'''Test runner and result class for the regression test suite.
@@ -55,7 +49,7 @@ from datetime import datetime
 class RegressionTestResult(unittest.TextTestResult):"
                     0 99)
                    (with-current-buffer
-                       (elves-librarian-reference-contents-of
+                       (elves-quote-contents-of
                         (nth 1 references))
                      (buffer-substring 1 100))))))
 

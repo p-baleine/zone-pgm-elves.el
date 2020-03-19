@@ -1,4 +1,4 @@
-;;; elves-reference.el --- References -*- lexical-binding: t; -*-
+;;; elves-quote.el --- Quotes -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2020 Junpei Tajima
 ;;
@@ -26,56 +26,55 @@
 
 (require 'elves-logging)
 
-(defclass elves-librarian-reference ()
+(defclass elves-quote ()
   ((repository-url
     :initarg :repository-url
-    :accessor elves-librarian-reference-repository-url-of
+    :accessor elves-quote-repository-url-of
     :type string)
    (commit-hash
     :initarg :commit-hash
-    :accessor elves-librarian-reference-commit-hash-of
+    :accessor elves-quote-commit-hash-of
     :type string)
    (path
     :initarg :path
-    :accessor elves-librarian-reference-path-of
+    :accessor elves-quote-path-of
     :type string)
    (line-number
     :initarg :line-number
-    :accessor elves-librarian-reference-line-number-of
+    :accessor elves-quote-line-number-of
     :type number)
    (column
     :initarg :column
-    :accessor elves-librarian-reference-column-of
+    :accessor elves-quote-column-of
     :type number)
    (matching
     :initarg :matching
-    :accessor elves-librarian-reference-matching-of
+    :accessor elves-quote-matching-of
     :type string)))
 
-(defclass elves-librarian-reference-head
-  (elves-librarian-reference) ())
+(defclass elves-quote-head (elves-quote) ())
 
-(cl-defgeneric elves-librarian-reference-offset-of (reference)
+(cl-defgeneric elves-quote-offset-of (reference)
   (let ((buffer
-         (elves-librarian-reference-contents-of reference))
+         (elves-quote-contents-of reference))
         (line-number
-         (elves-librarian-reference-line-number-of reference))
+         (elves-quote-line-number-of reference))
         (column
-         (elves-librarian-reference-column-of reference))
+         (elves-quote-column-of reference))
         (matching
-         (elves-librarian-reference-matching-of reference)))
+         (elves-quote-matching-of reference)))
     (with-current-buffer buffer
       (goto-char (point-min))
       (forward-line (1- line-number))
       (forward-char (+ column (string-width matching)))
       (point))))
 
-(cl-defgeneric elves-librarian-reference-contents-of (reference)
+(cl-defgeneric elves-quote-contents-of (reference)
   ;; FIXME: ここ二度呼ぶのまじでやめて
   ;; FIXME: 一々 temporary な worktree が projectile に登録されるのやめて
   ;; FIXME: テスト書けよ
   (let* ((commit-ish
-          (elves-librarian-reference-commit-hash-of reference))
+          (elves-quote-commit-hash-of reference))
          (dir-name (s-join
                     "."
                     `("zone-pgm-elves"
@@ -93,14 +92,14 @@
     (find-file-noselect
      (f-join
       work-dir
-      (elves-librarian-reference-path-of reference)))))
+      (elves-quote-path-of reference)))))
 
-(cl-defmethod elves-librarian-reference-contents-of
-  ((reference elves-librarian-reference-head))
+(cl-defmethod elves-quote-contents-of
+  ((reference elves-quote-head))
   (find-file-noselect
    (f-join
-    (elves-librarian-reference-repository-url-of reference)
-    (elves-librarian-reference-path-of reference))))
+    (elves-quote-repository-url-of reference)
+    (elves-quote-path-of reference))))
 
-(provide 'elves-reference)
-;;; elves-reference.el ends here
+(provide 'elves-quote)
+;;; elves-quote.el ends here

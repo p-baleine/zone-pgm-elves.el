@@ -58,10 +58,10 @@
 (defun elves--create-draft-buffer (reference)
   "Create a temporary buffer which contain the contents of `REFERENCE'."
   (-let* ((draft (get-buffer-create (make-temp-name "*elves-")))
-          (start (elves-librarian-reference-offset-of reference)))
+          (start (elves-quote-offset-of reference)))
     (with-current-buffer draft
       (insert-buffer-substring
-       (elves-librarian-reference-contents-of reference) start))
+       (elves-quote-contents-of reference) start))
     draft))
 
 (defun elves--buffer-line-count (buffer)

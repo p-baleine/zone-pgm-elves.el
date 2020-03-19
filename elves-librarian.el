@@ -25,7 +25,7 @@
 (require 's)
 
 (require 'elves-logging)
-(require 'elves-reference)
+(require 'elves-quote)
 
 ;; TODO: 検索条件をもっとfuzzyにする
 ;; TODO: 検索結果から検索に用いたファイルに関するエントリは除去する
@@ -34,6 +34,7 @@
 (cl-defgeneric elves-enumerate-referencces (librarian context)
   "Return a list of references that would be searched by
 `LIBRARIAN' based on `CONTEXT'."
+  ;; FIXME: TEST 書いてからもう少し綺麗にして
   (let* ((patterns (elves-librarian--patterns-from context))
          (cmd
           (let ((cmd
@@ -48,7 +49,7 @@
          (cwd
          (s-trim
           (shell-command-to-string "git rev-parse --show-toplevel")))
-         (reference-class (elves-librarian-reference-class-of librarian)))
+         (reference-class (elves-librarian-quote-class-of librarian)))
     (->> (s-split "\n" output)
          (-remove #'s-blank?)
          (-map (lambda (x) (s-split "\t" x)))
@@ -65,8 +66,8 @@
   ((search-cmd
     :accessor elves-librarian-search-cmd-of)
    (reference-class
-    :accessor elves-librarian-reference-class-of
-    :initform 'elves-librarian-reference-head)))
+    :accessor elves-librarian-quote-class-of
+    :initform 'elves-quote-head)))
 
 (cl-defmethod elves-librarian-search-cmd-of
   ((_librarian elves-librarian) patterns)
@@ -84,9 +85,9 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
    ;; なんでだろう？？
    :commit-objects-cmd "git rev-list --all | head -n 10"))
 
-(cl-defmethod elves-librarian-reference-class-of
+(cl-defmethod elves-librarian-quote-class-of
   ((_librarian elves-librarian@時の回廊))
-  'elves-librarian-reference)
+  'elves-quote)
 
 (defun elves-librarian--patterns-from (context)
   (->> (s-split "\n" context)

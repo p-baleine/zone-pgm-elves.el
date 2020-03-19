@@ -66,7 +66,7 @@
     :accessor elves-librarian-search-cmd-of)
    (reference-class
     :accessor elves-librarian-reference-class-of
-    :initform 'elves-librarian-reference)))
+    :initform 'elves-librarian-reference-head)))
 
 (cl-defmethod elves-librarian-search-cmd-of
   ((_librarian elves-librarian) patterns)
@@ -86,7 +86,7 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
 
 (cl-defmethod elves-librarian-reference-class-of
   ((_librarian elves-librarian@時の回廊))
-  'elves-librarian-reference-@時の回廊)
+  'elves-librarian-reference)
 
 (defun elves-librarian--patterns-from (context)
   (->> (s-split "\n" context)

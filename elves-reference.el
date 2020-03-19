@@ -26,27 +26,6 @@
 
 (require 'elves-logging)
 
-(cl-defgeneric elves-librarian-reference-offset-of (reference)
-  (let ((buffer
-         (elves-librarian-reference-contents-of reference))
-        (line-number
-         (elves-librarian-reference-line-number-of reference))
-        (column
-         (elves-librarian-reference-column-of reference))
-        (matching
-         (elves-librarian-reference-matching-of reference)))
-    (with-current-buffer buffer
-      (goto-char (point-min))
-      (forward-line (1- line-number))
-      (forward-char (+ column (string-width matching)))
-      (point))))
-
-(cl-defgeneric elves-librarian-reference-contents-of (reference)
-  (find-file-noselect
-   (f-join
-    (elves-librarian-reference-repository-url-of reference)
-    (elves-librarian-reference-path-of reference))))
-
 (defclass elves-librarian-reference ()
   ((repository-url
     :initarg :repository-url
@@ -73,11 +52,25 @@
     :accessor elves-librarian-reference-matching-of
     :type string)))
 
-(defclass elves-librarian-reference-@時の回廊
+(defclass elves-librarian-reference-head
   (elves-librarian-reference) ())
 
-(cl-defmethod elves-librarian-reference-contents-of
-  ((reference elves-librarian-reference-@時の回廊))
+(cl-defgeneric elves-librarian-reference-offset-of (reference)
+  (let ((buffer
+         (elves-librarian-reference-contents-of reference))
+        (line-number
+         (elves-librarian-reference-line-number-of reference))
+        (column
+         (elves-librarian-reference-column-of reference))
+        (matching
+         (elves-librarian-reference-matching-of reference)))
+    (with-current-buffer buffer
+      (goto-char (point-min))
+      (forward-line (1- line-number))
+      (forward-char (+ column (string-width matching)))
+      (point))))
+
+(cl-defgeneric elves-librarian-reference-contents-of (reference)
   ;; FIXME: ここ二度呼ぶのまじでやめて
   ;; FIXME: 一々 temporary な worktree が projectile に登録されるのやめて
   ;; FIXME: テスト書けよ
@@ -101,6 +94,13 @@
      (f-join
       work-dir
       (elves-librarian-reference-path-of reference)))))
+
+(cl-defmethod elves-librarian-reference-contents-of
+  ((reference elves-librarian-reference-head))
+  (find-file-noselect
+   (f-join
+    (elves-librarian-reference-repository-url-of reference)
+    (elves-librarian-reference-path-of reference))))
 
 (provide 'elves-reference)
 ;;; elves-reference.el ends here

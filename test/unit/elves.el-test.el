@@ -20,7 +20,7 @@
   (let* ((file (elves-test--make-fixture-file))
          (reference
           (make-instance
-           'elves-librarian-reference
+           'elves-librarian-reference-head
            :repository-url ""
            :path file
            :line-number 2

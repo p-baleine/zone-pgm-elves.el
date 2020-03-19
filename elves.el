@@ -55,13 +55,13 @@
          (start (- end len)))
     (buffer-substring start end)))
 
-(defun elves--create-draft-buffer (reference)
-  "Create a temporary buffer which contain the contents of `REFERENCE'."
+(defun elves--create-draft-buffer (quote)
+  "Create a temporary buffer which contain the contents of `QUOTE'."
   (-let* ((draft (get-buffer-create (make-temp-name "*elves-")))
-          (start (elves-librarian-reference-offset-of reference)))
+          (start (elves-quote-offset-of quote)))
     (with-current-buffer draft
       (insert-buffer-substring
-       (elves-librarian-reference-contents-of reference) start))
+       (elves-quote-contents-of quote) start))
     draft))
 
 (defun elves--buffer-line-count (buffer)
@@ -76,12 +76,6 @@
   (elves-pgm :artist (make-instance 'elves-sanguine-artist)))
 
 (defun elves-sanguine@時の回廊 ()
-  ;; 光田さんですよ♪♪♪
-  ;;
-  ;; …最近は、自分が何歳なのか、男か女か、よく分からないのです(元々なのでは？)
-  ;; 記憶も曖昧…3 歩前のことも覚えてなかったりします(元々なのでは？)
-  ;; そろそろ人としての自信もないのです(…困ったなぁ 😅)
-  ;; なんか僕もうだめな気がしてきました(…今更？)…へへ 😂
   (elves-pgm
    :artist (make-instance 'elves-sanguine-artist)
    :scrutinizer (make-instance 'elves-probabilistic-scrutinizer)
@@ -95,7 +89,7 @@
 
 (cl-defun elves-pgm
     (&key
-     (librarian (make-instance 'elves-librarian))
+     (librarian (make-instance 'elves-librarian-naive))
      (scrutinizer (make-instance 'elves-deterministic-scrutinizer))
      (artist (make-instance 'elves-phlegmatic-artist)))
   "A Zone Mode where elves will work on behalf of you.
@@ -124,23 +118,22 @@ https://www.ietf.org/rfc/rfc3676.txt"
    (eieio-object-class-name scrutinizer)
    (eieio-object-class-name artist))
 
-  (let* ((context (elves--get-context))
-         (references
-          (elves-enumerate-referencces librarian context))
-         (reference-loc
-          (elves-scrutinize-references scrutinizer references))
-         (draft-buffer (elves--create-draft-buffer reference-loc))
+  (let* ((the-context (elves--get-context))
+         (quotes (elves-enumerate-quotes librarian the-context))
+         (the-quote
+          (elves-scrutinize-quotes scrutinizer quotes))
+         (draft-buffer (elves--create-draft-buffer the-quote))
          (window (get-buffer-window)))
 
     (elves--debug
-     "%s found references: %s"
+     "%s found quotes: %s"
      (eieio-object-class-name librarian)
-     references)
+     quotes)
 
     (elves--debug
-     "%s elected reference: %s"
+     "%s elected quote: %s"
      (eieio-object-class-name scrutinizer)
-     reference-loc)
+     the-quote)
 
     (unwind-protect
         (elves-chitchat-with-chitchat

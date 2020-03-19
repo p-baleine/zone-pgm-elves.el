@@ -25,34 +25,51 @@
 (require 's)
 
 (require 'elves-logging)
+(require 'elves-quote)
 
 ;; TODO: 検索条件をもっとfuzzyにする
 ;; TODO: 検索結果から検索に用いたファイルに関するエントリは除去する
 ;; TODO: 拡張子を考慮する、今 clj ファイル開いてるなら clj しか検索しないみたいな
 
-(cl-defgeneric elves-enumerate-referencces (librarian context)
-  "Return a list of references that would be searched by
-`LIBRARIAN' based on `CONTEXT'."
-  (let* ((patterns (elves-librarian--patterns-from context))
+(defclass elves-librarian ()
+  ((search-cmd
+    :accessor elves-librarian-search-cmd-of)
+   (quote-class
+    :accessor elves-librarian-quote-class-of
+    :initform 'elves-quote-head)))
+
+(defclass elves-librarian-historical (elves-librarian) ()
+  "はい
+https://www.youtube.com/watch?v=9ECai7f2Y40")
+
+(cl-defmethod elves-librarian--debug
+  ((librarian elves-librarian) msg &rest args)
+  (apply #'elves--debug
+         (s-join " " (list "Librarian %s," msg))
+         (eieio-object-class-name librarian)
+         `,@args))
+
+(cl-defgeneric elves-enumerate-quotes (librarian context)
+  "Return a list of `QUOTE's that would be searched by
+`LIBRARIAN'."
+  ;; FIXME: TEST 書いてからもう少し綺麗にして
+  (let* ((patterns (elves-librarian-emurate-keywords librarian context))
          (cmd
           (let ((cmd
                  (elves-librarian-search-cmd-of librarian patterns)))
-            ;; NOTE: 自動的に librarian のクラス名をログに含めたいね
-            (elves--debug
-             "%s will grep by command: `%s'"
-             (eieio-object-class-name librarian)
-             cmd)
+            (elves-librarian--debug
+             librarian "grep by command: `%s'" cmd)
             cmd))
          (output (shell-command-to-string cmd))
          (cwd
          (s-trim
           (shell-command-to-string "git rev-parse --show-toplevel")))
-         (reference-class (elves-librarian-reference-class-of librarian)))
+         (quote-class (elves-librarian-quote-class-of librarian)))
     (->> (s-split "\n" output)
          (-remove #'s-blank?)
          (-map (lambda (x) (s-split "\t" x)))
          (--map (make-instance
-                 reference-class
+                 quote-class
                  :repository-url cwd
                  :commit-hash (nth 0 it)
                  :path (nth 1 it)
@@ -60,140 +77,95 @@
                  :column (string-to-number (nth 3 it))
                  :matching (nth 4 it))))))
 
-(defclass elves-librarian ()
-  ((search-cmd
-    :accessor elves-librarian-search-cmd-of)
-   (reference-class
-    :accessor elves-librarian-reference-class-of
-    :initform 'elves-librarian-reference-local)))
-
 (cl-defmethod elves-librarian-search-cmd-of
   ((_librarian elves-librarian) patterns)
   (elves-librarian--search-cmd patterns))
 
-(defclass elves-librarian@時の回廊 (elves-librarian) ()
-  "はい
-https://www.youtube.com/watch?v=9ECai7f2Y40")
-
 (cl-defmethod elves-librarian-search-cmd-of
-  ((_librarian elves-librarian@時の回廊) patterns)
+  ((_librarian elves-librarian-historical) patterns)
   (elves-librarian--search-cmd
    patterns
-   ;; FIXME: head で絞らないと「zsh:1: 引数リストが長すぎます: git」と怒られる
-   ;; なんでだろう？？
-   :commit-objects-cmd "git rev-list --all | head -n 10"))
+   :commit-objects-cmd
+   (s-join
+    " | "
+    '("git rev-list --no-merges --remove-empty --all --max-count 1000"
+      "shuf" ;; shuf って Mac とかなくないか？？
+      "head -n 5"))
+   :case-insensitive nil
+   :perl-regexp t))
 
-(cl-defmethod elves-librarian-reference-class-of
-  ((_librarian elves-librarian@時の回廊))
-  'elves-librarian-reference-@時の回廊)
+(cl-defmethod elves-librarian-quote-class-of
+  ((_librarian elves-librarian-historical))
+  'elves-quote)
 
-(defclass elves-librarian-reference ()
-  ;; reference って librarian とは別な概念な気がするのでファイル分けたほうが
-  ;; よいのかな、と思う。
-  ;; …でも正直 CLOS(eieio か)って僕の常識が一切通用しないので、何が正しいのか
-  ;; 分からなく、ファイル分ける必要もないのかもしれない…そういう常識が通用しない
-  ;; 辺りが触っていて楽してく楽しくて、時間を忘れてしまいます > えいえいおお。
-  ((repository-url
-    :initarg :repository-url
-    :accessor elves-librarian-reference-repository-url-of
-    :type string)
-   (commit-hash
-    :initarg :commit-hash
-    :accessor elves-librarian-reference-commit-hash-of
-    :type string)
-   (path
-    :initarg :path
-    :accessor elves-librarian-reference-path-of
-    :type string)
-   (line-number
-    :initarg :line-number
-    :accessor elves-librarian-reference-line-number-of
-    :type number)
-   (column
-    :initarg :column
-    :accessor elves-librarian-reference-column-of
-    :type number)
-   (matching
-    :initarg :matching
-    :accessor elves-librarian-reference-matching-of
-    :type string)
-   (offset
-    :initarg :offset
-    :accessor elves-librarian-reference-offset-of
-    :type number)
-   (contents
-    :accessor elves-librarian-reference-contents-of)))
+;; Mixins.
 
-(defclass elves-librarian-reference-local
-  (elves-librarian-reference) ())
+(defclass elves-librarian-keyword-enumerable-mixin () ())
 
-(defclass elves-librarian-reference-@時の回廊
-  (elves-librarian-reference) ())
+(defclass elves-librarian-keyword-enumerable-fuzzily-mixin
+  (elves-librarian-keyword-enumerable-mixin)
+  ((maxlength
+    :initarg maxlength
+    :initform 20
+    :accessor elves-librarian-keyword-enumerable-fuzzily-length-of)))
 
-;; FIXME: これは generic なのでは？？
-(cl-defmethod elves-librarian-reference-offset-of
-  ((reference elves-librarian-reference))
-  (let ((buffer
-         (elves-librarian-reference-contents-of reference))
-        (line-number
-         (elves-librarian-reference-line-number-of reference))
-        (column
-         (elves-librarian-reference-column-of reference))
-        (matching
-         (elves-librarian-reference-matching-of reference)))
-    (with-current-buffer buffer
-      (goto-char (point-min))
-      (forward-line (1- line-number))
-      (forward-char (+ column (string-width matching)))
-      (point))))
-
-(cl-defmethod elves-librarian-reference-contents-of
-  ((reference elves-librarian-reference-local))
-  (find-file-noselect
-   (f-join
-    (elves-librarian-reference-repository-url-of reference)
-    (elves-librarian-reference-path-of reference))))
-
-(cl-defmethod elves-librarian-reference-contents-of
-  ((reference elves-librarian-reference-@時の回廊))
-  ;; FIXME: ここ二度呼ぶのまじでやめて
-  ;; FIXME: 一々 temporary な worktree が projectile に登録されるのやめて
-  ;; FIXME: テスト書けよ
-  (let* ((commit-ish
-          (elves-librarian-reference-commit-hash-of reference))
-         (dir-name (s-join
-                    "."
-                    `("zone-pgm-elves"
-                      ,(format-time-string "%s"))))
-         (work-dir
-          (let ((path (f-join "/" "tmp" dir-name)))
-            (mkdir path t)
-            path)))
-    (elves--debug "Add worktree of %s at %s" commit-ish work-dir)
-    (shell-command-to-string
-     (s-join
-      " "
-      `("git worktree add --detach"
-        ,work-dir ,commit-ish)))
-    (find-file-noselect
-     (f-join
-      work-dir
-      (elves-librarian-reference-path-of reference)))))
-
-(defun elves-librarian--patterns-from (context)
+;; FIXME: contextは引数でもらうようにする
+(cl-defgeneric elves-librarian-emurate-keywords
+    (_enumerator context)
   (->> (s-split "\n" context)
-       (-map #'s-trim)
-       (-remove #'s-blank?)
-       (-map #'shell-quote-argument)
-       (s-join  " --or -e ")))
+     (-map #'s-trim)
+     (-remove #'s-blank?)
+     (-map #'shell-quote-argument)
+     (s-join  " --or -e ")))
+
+(cl-defmethod elves-librarian-emurate-keywords
+  ((enumerator elves-librarian-keyword-enumerable-fuzzily-mixin)
+   context)
+  (let ((maxlength
+         (elves-librarian-keyword-enumerable-fuzzily-length-of
+          enumerator)))
+    (with-temp-buffer
+      (insert context)
+      (goto-char (point-max))
+      (let* ((chars
+              (cl-loop
+               with len = 0 while (< len maxlength)
+               do (backward-char 1)
+               for c = (char-after)
+               for is-whitespace = (member c '(0 10 32))
+               unless is-whitespace
+               do (cl-incf len)
+               and
+               collect c))
+             (str (apply #'string (reverse chars)))
+             (words (-> str (shell-quote-argument) (s-split-words)))
+             (pattern (s-join ".*" `("" ,@words "$"))))
+        (s-join "" (list "\"" pattern "\""))))))
+
+(defclass elves-librarian-naive
+  (elves-librarian
+   elves-librarian-keyword-enumerable-mixin) ())
+
+(defclass elves-librarian@時の回廊
+  (elves-librarian-historical
+   elves-librarian-keyword-enumerable-fuzzily-mixin) ())
+
+;; Utilty.
 
 (cl-defun elves-librarian--search-cmd
-    (patterns &key (commit-objects-cmd "git rev-parse HEAD"))
+    (patterns &key (commit-objects-cmd "git rev-parse HEAD")
+              ;; テスト通らないからとりあえずオプション受け付けるようにしてる
+              ;; FIXME: …こういうことしてると段々収集つかなくなるのでやめよう
+              (case-insensitive nil)
+              (perl-regexp nil))
   (let ((search-cmd-prefix
          (s-join
           " "
-          '("git --no-pager grep --line-number --column -I"
-            "--no-color --full-name --only-matching -e")))
+          `("git --no-pager grep --line-number --column -I"
+            "--no-color --full-name --only-matching"
+            ,(if case-insensitive "-i" "")
+            ,(if perl-regexp "-P" "")
+            "-e")))
         (search-cmd-postfix
          (s-join
           " "
@@ -202,9 +174,12 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
             ")"
             "--"
             "$(git rev-parse --show-toplevel)"
-            ;; FIXME: gawk 必須なのなんとかならないかしら？
-            "| gawk -F ':'"
-            "'{print $1 \"\t\" $2 \"\t\" $3 \"\t\" $4 \"\t\" $5}'"))))
+            "| perl -ple"
+            ,(s-join
+              ""
+              '("'s/"
+                "^\([^:]+\):\([^:]+\):\([^:]+\):\([^:]+\):\(.*\)$/"
+                "\\1\\t\\2\\t\\3\\t\\4\\t\\5/g'"))))))
     (s-join " "
       (list search-cmd-prefix patterns search-cmd-postfix))))
 

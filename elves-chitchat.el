@@ -95,17 +95,13 @@
     (while t
       (let ((l (nth (random (length lyrics)) lyrics))
             (s (nth (random (length smiles)) smiles))
-            (ts (format-time-string "%H:%M")))
+            (ts (format-time-string "%H:%M:%S")))
         (iter-yield
          (concat ts (🎨 (format "\t<%s>\t" s)) l))))))
 
 (cl-defun elves-chitchat-shut-interval (&key (mean 3.0) (sigma 1.5))
   "Return seconds between chats."
   (elves-sample-from-normd :mean mean :sigma sigma))
-
-;; TODO: 子プロセスからメッセージもらって親で良いかんじに出力したい
-;; 今は子プロセスとのメッセージのやりとりの仕方が分からないため
-;; display-buffer でお茶を濁している
 
 (defun elves-chitchat--symbol-function (sym)
   "Return the function definition of `SYM'."

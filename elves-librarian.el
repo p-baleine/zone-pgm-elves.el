@@ -34,7 +34,7 @@
 (defclass elves-librarian ()
   ((search-cmd
     :accessor elves-librarian-search-cmd-of)
-   (reference-class
+   (quote-class
     :accessor elves-librarian-quote-class-of
     :initform 'elves-quote-head)))
 
@@ -42,8 +42,8 @@
   "はい
 https://www.youtube.com/watch?v=9ECai7f2Y40")
 
-(cl-defgeneric elves-enumerate-referencces (librarian context)
-  "Return a list of references that would be searched by
+(cl-defgeneric elves-enumerate-quotes (librarian context)
+  "Return a list of `QUOTE's that would be searched by
 `LIBRARIAN' based on `CONTEXT'."
   ;; FIXME: TEST 書いてからもう少し綺麗にして
   (let* ((patterns (elves-librarian--patterns-from context))
@@ -60,12 +60,12 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
          (cwd
          (s-trim
           (shell-command-to-string "git rev-parse --show-toplevel")))
-         (reference-class (elves-librarian-quote-class-of librarian)))
+         (quote-class (elves-librarian-quote-class-of librarian)))
     (->> (s-split "\n" output)
          (-remove #'s-blank?)
          (-map (lambda (x) (s-split "\t" x)))
          (--map (make-instance
-                 reference-class
+                 quote-class
                  :repository-url cwd
                  :commit-hash (nth 0 it)
                  :path (nth 1 it)

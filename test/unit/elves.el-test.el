@@ -18,7 +18,7 @@
 
 (ert-deftest elves-test-elves--create-draft-buffer ()
   (let* ((file (elves-test--make-fixture-file))
-         (reference
+         (the-quote
           (make-instance
            'elves-quote-head
            :repository-url ""
@@ -26,7 +26,7 @@
            :line-number 2
            :column 37
            :matching "\n"))
-         (draft (elves--create-draft-buffer reference))
+         (draft (elves--create-draft-buffer the-quote))
          (expected (with-current-buffer (find-file-noselect file)
                      (buffer-substring 65 (point-max)))))
     (unwind-protect

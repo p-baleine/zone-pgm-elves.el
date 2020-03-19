@@ -30,22 +30,22 @@
 
 (defclass elves-probabilistic-scrutinizer () ())
 
-(cl-defgeneric elves-scrutinize-references (scrutinizer references)
-  "Return a reference by scrutinizing `REFERENCES' by using `SCRUTINIZER'.
+(cl-defgeneric elves-scrutinize-quotes (scrutinizer quotes)
+  "Return a quote by scrutinizing `QUOTE's by using `SCRUTINIZER'.
 
-`REFERENCES' is a list of items where an item would be the form
+`QUOTE's is a list of items where an item would be the form
 of `(file-path . point)'."
   (unless scrutinizer
-    (nth 1 references)))
+    (nth 1 quotes)))
 
-(cl-defmethod elves-scrutinize-references
-  ((scrutinizer elves-deterministic-scrutinizer) references)
-  (nth (elves-deterministic-scrutinizer-n-of scrutinizer) references))
+(cl-defmethod elves-scrutinize-quotes
+  ((scrutinizer elves-deterministic-scrutinizer) quotes)
+  (nth (elves-deterministic-scrutinizer-n-of scrutinizer) quotes))
 
-(cl-defmethod elves-scrutinize-references
-  ((_scrutinizer elves-probabilistic-scrutinizer) references)
-  (let* ((n (random (length references))))
-    (nth n references)))
+(cl-defmethod elves-scrutinize-quotes
+  ((_scrutinizer elves-probabilistic-scrutinizer) quotes)
+  (let* ((n (random (length quotes))))
+    (nth n quotes)))
 
 (provide 'elves-scrutinizer)
 ;;; elves-scrutinizer.el ends here

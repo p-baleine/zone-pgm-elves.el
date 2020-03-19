@@ -55,13 +55,13 @@
          (start (- end len)))
     (buffer-substring start end)))
 
-(defun elves--create-draft-buffer (reference)
-  "Create a temporary buffer which contain the contents of `REFERENCE'."
+(defun elves--create-draft-buffer (quote)
+  "Create a temporary buffer which contain the contents of `QUOTE'."
   (-let* ((draft (get-buffer-create (make-temp-name "*elves-")))
-          (start (elves-quote-offset-of reference)))
+          (start (elves-quote-offset-of quote)))
     (with-current-buffer draft
       (insert-buffer-substring
-       (elves-quote-contents-of reference) start))
+       (elves-quote-contents-of quote) start))
     draft))
 
 (defun elves--buffer-line-count (buffer)
@@ -119,22 +119,22 @@ https://www.ietf.org/rfc/rfc3676.txt"
    (eieio-object-class-name artist))
 
   (let* ((context (elves--get-context))
-         (references
-          (elves-enumerate-referencces librarian context))
-         (reference-loc
-          (elves-scrutinize-references scrutinizer references))
-         (draft-buffer (elves--create-draft-buffer reference-loc))
+         (quotes
+          (elves-enumerate-quotes librarian context))
+         (the-quote
+          (elves-scrutinize-quotes scrutinizer quotes))
+         (draft-buffer (elves--create-draft-buffer the-quote))
          (window (get-buffer-window)))
 
     (elves--debug
-     "%s found references: %s"
+     "%s found quotes: %s"
      (eieio-object-class-name librarian)
-     references)
+     quotes)
 
     (elves--debug
-     "%s elected reference: %s"
+     "%s elected quote: %s"
      (eieio-object-class-name scrutinizer)
-     reference-loc)
+     the-quote)
 
     (unwind-protect
         (elves-chitchat-with-chitchat

@@ -59,32 +59,33 @@
 
 (defclass elves-quote-head (elves-quote) ())
 
-(cl-defgeneric elves-quote-offset-of (reference)
+(cl-defgeneric elves-quote-offset-of (quote)
   (let ((buffer
-         (elves-quote-contents-of reference))
+         (elves-quote-contents-of quote))
         (line-number
-         (elves-quote-line-number-of reference))
+         (elves-quote-line-number-of quote))
         (column
-         (elves-quote-column-of reference))
+         (elves-quote-column-of quote))
         (matching
-         (elves-quote-matching-of reference)))
+         (elves-quote-matching-of quote)))
     (with-current-buffer buffer
       (goto-char (point-min))
       (forward-line (1- line-number))
       (forward-char (+ column (string-width matching)))
       (point))))
 
-(cl-defgeneric elves-quote-contents-of (reference)
+(cl-defgeneric elves-quote-contents-of (quote)
   ;; FIXME: 一々 temporary な worktree が projectile に登録されるのやめて
+  ;; 多分一時的んいprojectile-globally-ignored-file-suffixes bind すればょいのかな
   ;; FIXME: テスト書けよ
   ;; FIXME: worktree のクリーンアップ
   ;; TODO: やはりelves-quoteも一段特殊にしたい
   (let* ((commit-ish
-          (elves-quote-commit-hash-of reference))
+          (elves-quote-commit-hash-of quote))
          (dir-name (s-join
                     "."
                     `("zone-pgm-elves"
-                      ,(elves-quote-created-at-of reference))))
+                      ,(elves-quote-created-at-of quote))))
          (work-dir
           (let* ((path (f-join "/" "tmp" dir-name))
                  (result (ignore-errors (not (mkdir path nil)))))
@@ -102,14 +103,14 @@
     (find-file-noselect
      (f-join
       work-dir
-      (elves-quote-path-of reference)))))
+      (elves-quote-path-of quote)))))
 
 (cl-defmethod elves-quote-contents-of
-  ((reference elves-quote-head))
+  ((quote elves-quote-head))
   (find-file-noselect
    (f-join
-    (elves-quote-repository-url-of reference)
-    (elves-quote-path-of reference))))
+    (elves-quote-repository-url-of quote)
+    (elves-quote-path-of quote))))
 
 (provide 'elves-quote)
 ;;; elves-quote.el ends here

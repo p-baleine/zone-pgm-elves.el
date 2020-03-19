@@ -31,6 +31,17 @@
 ;; TODO: 検索結果から検索に用いたファイルに関するエントリは除去する
 ;; TODO: 拡張子を考慮する、今 clj ファイル開いてるなら clj しか検索しないみたいな
 
+(defclass elves-librarian ()
+  ((search-cmd
+    :accessor elves-librarian-search-cmd-of)
+   (reference-class
+    :accessor elves-librarian-quote-class-of
+    :initform 'elves-quote-head)))
+
+(defclass elves-librarian@時の回廊 (elves-librarian) ()
+  "はい
+https://www.youtube.com/watch?v=9ECai7f2Y40")
+
 (cl-defgeneric elves-enumerate-referencces (librarian context)
   "Return a list of references that would be searched by
 `LIBRARIAN' based on `CONTEXT'."
@@ -62,20 +73,9 @@
                  :column (string-to-number (nth 3 it))
                  :matching (nth 4 it))))))
 
-(defclass elves-librarian ()
-  ((search-cmd
-    :accessor elves-librarian-search-cmd-of)
-   (reference-class
-    :accessor elves-librarian-quote-class-of
-    :initform 'elves-quote-head)))
-
 (cl-defmethod elves-librarian-search-cmd-of
   ((_librarian elves-librarian) patterns)
   (elves-librarian--search-cmd patterns))
-
-(defclass elves-librarian@時の回廊 (elves-librarian) ()
-  "はい
-https://www.youtube.com/watch?v=9ECai7f2Y40")
 
 (cl-defmethod elves-librarian-search-cmd-of
   ((_librarian elves-librarian@時の回廊) patterns)
@@ -88,6 +88,8 @@ https://www.youtube.com/watch?v=9ECai7f2Y40")
 (cl-defmethod elves-librarian-quote-class-of
   ((_librarian elves-librarian@時の回廊))
   'elves-quote)
+
+;; Utilty.
 
 (defun elves-librarian--patterns-from (context)
   (->> (s-split "\n" context)

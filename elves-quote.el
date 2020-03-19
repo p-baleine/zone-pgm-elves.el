@@ -50,6 +50,11 @@
    (matching
     :initarg :matching
     :accessor elves-quote-matching-of
+    :type string)
+   (created-at
+    :initarg :created-at
+    :initform (format-time-string "%s")
+    :accessor elves-quote-created-at-of
     :type string)))
 
 (defclass elves-quote-head (elves-quote) ())
@@ -70,25 +75,30 @@
       (point))))
 
 (cl-defgeneric elves-quote-contents-of (reference)
-  ;; FIXME: ここ二度呼ぶのまじでやめて
   ;; FIXME: 一々 temporary な worktree が projectile に登録されるのやめて
   ;; FIXME: テスト書けよ
+  ;; FIXME: worktree のクリーンアップ
+  ;; TODO: やはりelves-quoteも一段特殊にしたい
   (let* ((commit-ish
           (elves-quote-commit-hash-of reference))
          (dir-name (s-join
                     "."
                     `("zone-pgm-elves"
-                      ,(format-time-string "%s"))))
+                      ,(elves-quote-created-at-of reference))))
          (work-dir
-          (let ((path (f-join "/" "tmp" dir-name)))
-            (mkdir path t)
+          (let* ((path (f-join "/" "tmp" dir-name))
+                 (result (ignore-errors (not (mkdir path nil)))))
+            (if (not result)
+                (elves--debug "Worktree of %s at %s is already created."
+                              commit-ish path)
+              (progn
+                (elves--debug "Add worktree of %s at %s" commit-ish path)
+                (shell-command-to-string
+                 (s-join
+                  " "
+                  `("git worktree add --detach"
+                    ,path ,commit-ish)))))
             path)))
-    (elves--debug "Add worktree of %s at %s" commit-ish work-dir)
-    (shell-command-to-string
-     (s-join
-      " "
-      `("git worktree add --detach"
-        ,work-dir ,commit-ish)))
     (find-file-noselect
      (f-join
       work-dir

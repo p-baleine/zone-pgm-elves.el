@@ -21,6 +21,15 @@
 
 (require 'eieio)
 
+(defclass elves-deterministic-scrutinizer ()
+  ((n :initarg :n
+     :initform 0
+     :accessor elves-deterministic-scrutinizer-n-of
+     :type number
+     :documentation "N-th element will be chosen.")))
+
+(defclass elves-probabilistic-scrutinizer () ())
+
 (cl-defgeneric elves-scrutinize-references (scrutinizer references)
   "Return a reference by scrutinizing `REFERENCES' by using `SCRUTINIZER'.
 
@@ -29,18 +38,9 @@ of `(file-path . point)'."
   (unless scrutinizer
     (nth 1 references)))
 
-(defclass elves-deterministic-scrutinizer ()
-  ((n :initarg :n
-     :initform 0
-     :accessor elves-deterministic-scrutinizer-n-of
-     :type number
-     :documentation "N-th element will be chosen.")))
-
 (cl-defmethod elves-scrutinize-references
   ((scrutinizer elves-deterministic-scrutinizer) references)
   (nth (elves-deterministic-scrutinizer-n-of scrutinizer) references))
-
-(defclass elves-probabilistic-scrutinizer () ())
 
 (cl-defmethod elves-scrutinize-references
   ((_scrutinizer elves-probabilistic-scrutinizer) references)

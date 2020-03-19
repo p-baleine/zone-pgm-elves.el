@@ -29,12 +29,6 @@
 (defconst elves-default-frame-seconds 0.005)
 (defconst elves-default-prompt-frame-seconds 0.5)
 
-(cl-defgeneric elves-artist-completed? (artist)
-  "Whether `ARTIST' completes depicting?")
-
-(cl-defgeneric elves-artist-depict (artist)
-  "Depict by `ARTIST'.")
-
 (defclass elves-artist ()
   ((draft-buffer :initform nil
      :accessor elves-artist-draft-buffer-of)
@@ -42,6 +36,12 @@
      :accessor elves-artist-line-idx-of)
    (line-frames :initform nil
      :accessor elves-artist-line-frames-of)))
+
+(cl-defgeneric elves-artist-completed? (artist)
+  "Whether `ARTIST' completes depicting?")
+
+(cl-defgeneric elves-artist-depict (artist)
+  "Depict by `ARTIST'.")
 
 (cl-defmethod elves-artist-completed? ((_artist elves-artist))
   ;; TODO: ↓これ、嘘じゃない？
@@ -67,7 +67,8 @@
     (setf (buffer-substring lbp lep) content)
     (sit-for delay)))
 
-;; アイスクリーム屋さん
+;; Temperament mixins.
+
 (defclass elves-artist-temperament-phlegmatic-mixin () ())
 
 (defclass elves-artist-temperament-sanguine-mixin ()
@@ -85,8 +86,6 @@
   ((temp elves-artist-temperament-sanguine-mixin) seconds)
   (let ((rg (elves-artist-temperament-sanguine-mixin-rg-of temp))
         (sigma (elves-artist-temperament-sanguine-mixin-sigma-of temp)))
-    ;; 正規分布でぶれを作ると負数になることがあるんだよな、
-    ;; 分布の選択が間違ってる気がするけれど、頭悪いのでどうればよいのか分かりません
     (abs (+ seconds (* (funcall rg) sigma)))))
 
 (defclass elves-phlegmatic-artist

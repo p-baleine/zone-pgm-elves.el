@@ -103,10 +103,6 @@
   "Return seconds between chats."
   (elves-sample-from-normd :mean mean :sigma sigma))
 
-;; TODO: 子プロセスからメッセージもらって親で良いかんじに出力したい
-;; 今は子プロセスとのメッセージのやりとりの仕方が分からないため
-;; display-buffer でお茶を濁している
-
 (defun elves-chitchat--symbol-function (sym)
   "Return the function definition of `SYM'."
   (symbol-function (symbol-value sym)))
